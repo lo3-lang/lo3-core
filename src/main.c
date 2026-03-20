@@ -1,3 +1,6 @@
+// Copyright (c) 2026 seesee010
+// All Rights Reserved.
+
 #include "../lib/core.h"
 
 int main(int argc, char *argv[]) {
