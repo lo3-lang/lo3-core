@@ -1,3 +1,8 @@
 # lo3 programming language
 
-## What it is 
+## Run lo3 at your own machine
+
+```bash
+lo3 {FILENAME}
+```
+This will start the interpreter and run your code.
