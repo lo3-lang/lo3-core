@@ -7,7 +7,8 @@ lo3 {FILENAME}
 ```
 This will start the interpreter and run your code.
 
-Compile it yourself, linux:
+## Compile it yourself
+linux:
 ```bash
 cmake -B build
 cmake --build build
