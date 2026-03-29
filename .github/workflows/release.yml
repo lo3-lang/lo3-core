@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: |
+          cmake -B build
+          cmake --build build
+
+      - name: Package
+        run: |
+          tar -cf lo3-linux.tar -C build lo3
+          zip lo3-linux.zip build/lo3
+          xz -zk lo3-linux.tar
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            lo3-linux.zip
+            lo3-linux.tar
+            lo3-linux.tar.xz
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: |
+          cmake -B build
+          cmake --build build
+
+      - name: Package
+        run: |
+          Compress-Archive -Path build\Debug\lo3.exe -DestinationPath lo3-windows.zip
+          tar -cf lo3-windows.tar -C build/Debug lo3.exe
+          xz -zk lo3-windows.tar
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            lo3-windows.zip
+            lo3-windows.tar
+            lo3-windows.tar.xz
