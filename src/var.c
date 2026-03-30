@@ -40,6 +40,8 @@ void var_create(const char *name, int type) {
 
 	// create new var
 	lo3_var *var = malloc(sizeof(lo3_var));
+	memset(var, 0, sizeof(lo3_var)); // so var_free works correctly
+
 	strncpy(var->name, name, 64);
 	var->type = type;
 
@@ -101,16 +103,14 @@ void var_free(const char *name) {
 
 	int returnVal = var_find(name);
 
-	if (returnVal != -1) {
-		free(list->array[returnVal]);
-	} else {
+	if (returnVal == -1) {
 		lo3_error(
 		    "Could not free <var>. Is there any change that the var has an other name?",
 		    name);
 		return;
 	}
 
-	if (list->array[returnVal]->type == 3) {
+	if (list->array[returnVal]->type == 3 && list->array[returnVal]->value.string != NULL) {
 		free(list->array[returnVal]->value.string);
 	}
 	free(list->array[returnVal]);

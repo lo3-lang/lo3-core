@@ -19,9 +19,7 @@ int pars_isFileValid(char *name, FILE **file) {
 	size_t len = strlen(name);
 
 	if (len < 4 || strcmp(&name[len - 4], ".lo3") != 0) {
-		lo3_error("File must end with .lo3\n"
-		          "But it will not stop...",
-		          name);
+		lo3_error("File must end with .lo3\n", name);
 		return -1;
 	}
 
@@ -41,6 +39,14 @@ int pars_file(FILE *file) {
 		line[strcspn(line, "\n")] = '\0';
 
 		if (line[0] != '#') {
+			continue;
+		}
+
+		if (strlen(line) < 8) {
+			lo3_warn("You used some kind of magic line,"
+			         "which is propaply not lo3-core syntax, are you sure you wanna do "
+			         "this???",
+			         "");
 			continue;
 		}
 
@@ -160,6 +166,8 @@ lo3_val pars_resv(char type[64]) {
 
 		result.type = var->type;
 
+		// type: 0=num, 3=string (from ATYPE_ ... bitmasks, 1 and 2 are getting resolved,
+		// so it would be useless if you can write them)
 		if (!var->type) {
 			result.value.num = var->value.num;
 			result.chooseType = 0;

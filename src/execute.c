@@ -62,31 +62,42 @@ void exec_free(lo3_val a1, lo3_val a2, char array[2]) {
  * algo:
  * if the type of a1 is the same type, else lo3_error.
  * assign a1 = a2; if everything is correct!
+ *
+ * what is ok?:
+ * string as name, num as name
  */
 void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	char buf[64], *name;
+	char numNameBuf[64];
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
-		lo3_warn("Please verify that you really thought that you can assign a VALUE some "
-		         "VALUE!",
-		         buf);
-
 		name = buf;
+
 	} else {
 		name = a1.value.string;
 	}
 
-	// check for type diff
-	if (a2.chooseType != a1.chooseType) {
-		lo3_error("The types of arg0 and arg1 are not the same!\n"
-		          "Please check if you define your var as the asociated type of arg1",
-		          ""); // "": returns an line num!
+	// var_get() would also work here, but it is just a wrapper around var_find()
+	if (var_find(name) == -1) {
+		lo3_error("Could not find <var> please check if it really exists!", "");
 		return;
 	}
+
+	lo3_var newVar;
+	newVar.type = a2.chooseType;
+
+	if (!a2.chooseType) {
+		newVar.value.num = a2.value.num;
+
+	} else {
+		newVar.value.string = a2.value.string;
+	}
+
+	var_set(name, newVar);
 }
+
 void exec_add(lo3_val a1, lo3_val a2, char array[2]) {
 }
 
