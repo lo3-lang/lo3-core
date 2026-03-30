@@ -1,3 +1,6 @@
+// Copyright (c) 2026 seesee010
+// Read the License file for more informations about the license.
+
 #pragma once
 
 #include <string.h>
@@ -62,3 +65,4 @@ void exec_callS(lo3_val a1, lo3_val a2, char array[2]);
 void exec_label(lo3_val a1, lo3_val a2, char array[2]);
 void exec_out(lo3_val a1, lo3_val a2, char array[2]);
 void exec_in(lo3_val a1, lo3_val a2, char array[2]);
+void exec_free(lo3_val a1, lo3_val a2, char array[2]);

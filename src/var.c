@@ -1,3 +1,6 @@
+// Copyright (c) 2026 seesee010
+// Read the License file for more informations about the license.
+
 #include "../include/var.h"
 #include "../include/core.h"
 #include <stdlib.h>

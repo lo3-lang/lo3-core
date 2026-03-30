@@ -1,3 +1,8 @@
+// Copyright (c) 2026 seesee010
+// Read the License file for more informations about the license.
+//
+// You can find todos by reading the "todo" blocks.
+// But please read the whole block not only the single todo line
 #include "../include/core.h"
 #include "../include/var.h"
 
@@ -48,9 +53,15 @@ int pars_file(FILE *file) {
 		lo3_val a2 = pars_resv(arg2);
 
 		pars_getToKnowType(buff_types, a1, a2);
+
+		// todo:
+		// parse that prefix away.
+		//
+		// ///// More Information: /////
+		// here the program should parse the prefix, for example: '$' away.
+		// So the Exec dont have to do that.
 		pars_dispatch(cmds, a1, a2, buff_types);
 	}
-
 	free(line);
 	return 0;
 }
@@ -71,8 +82,11 @@ int pars_getToKnowType(char buffer[2], lo3_val val1, lo3_val val2) {
 	lo3_types possibleType[] = {val1.type, val2.type};
 	lo3_val values[] = {val1, val2};
 
-	// todo: num[] could be deleted
-	// because num[] is an additional array, which is sth really not needed...
+	// todo:
+	// num[] could be deleted
+	//
+	// ///// More Information /////
+	// Deleted because num[] is an additional array, which is sth really not needed...
 	// simply using buffer[] direct instead of num[].
 	for (int i = 0; i < 2; i++) {
 		switch (possibleType[i]) {
@@ -117,12 +131,17 @@ lo3_val pars_resv(char type[64]) {
 
 	case TYPE_array:
 
-		// not avaible now
+		// todo:
+		// create arrays in lo3
+		//
+		// ///// More Information: /////
+		// The syntax '*' is by now not fully valid.
+		// Cuz: there should be a file called "array.c" and "array.h", it's like var
 		break;
 
 	case TYPE_string:
 
-		result.value.string = type;
+		result.value.string = &type[1];
 		break;
 
 	case TYPE_var:
@@ -157,6 +176,11 @@ lo3_val pars_resv(char type[64]) {
 	return result;
 }
 
+// todo:
+// char array[2] should be deleted in every exec_...
+//
+// ///// More Information /////
+// Now array is very useless and not very helping. Now lo3_val has chooseType to choose its type.
 void pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2, char array[2]) {
 
 	switch (cmd) {
