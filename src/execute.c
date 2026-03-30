@@ -3,6 +3,7 @@
 
 #include "../include/additional-naming.h"
 #include "../include/core.h"
+#include "../include/specific-language.h"
 #include "../include/var.h"
 #include <stdio.h>
 
@@ -57,6 +58,11 @@ void exec_free(lo3_val a1, lo3_val a2, char array[2]) {
 	var_free(name);
 }
 
+/*
+ * algo:
+ * if the type of a1 is the same type, else lo3_error.
+ * assign a1 = a2; if everything is correct!
+ */
 void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
 
 	char buf[64];
@@ -67,13 +73,18 @@ void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
 		lo3_warn("Please verify that you really thought that you can assign a VALUE some "
 		         "VALUE!",
 		         buf);
+
 		name = buf;
 	} else {
 		name = a1.value.string;
 	}
 
-	// string
-	if (a2.chooseType) {
+	// check for type diff
+	if (a2.chooseType != a1.chooseType) {
+		lo3_error("The types of arg0 and arg1 are not the same!\n"
+		          "Please check if you define your var as the asociated type of arg1",
+		          ""); // "": returns an line num!
+		return;
 	}
 }
 void exec_add(lo3_val a1, lo3_val a2, char array[2]) {
@@ -101,7 +112,60 @@ void exec_label(lo3_val a1, lo3_val a2, char array[2]) {
 }
 
 void exec_out(lo3_val a1, lo3_val a2, char array[2]) {
+
+	char buf[64];
+	char *name;
+
+	if (!a1.chooseType) {
+		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		name = buf;
+	} else {
+		name = a1.value.string;
+	}
+
+	printf("%s\n", name);
 }
 
 void exec_in(lo3_val a1, lo3_val a2, char array[2]) {
+
+	char buf[64]; // max limit of pars_resv();
+	char *res;
+
+	char numNameBuf[64];
+	char *name;
+
+	res = fgets(buf, sizeof(buf), stdin);
+
+	if (res == NULL) {
+		lo3_error("Something went wrong while reading the stdin stream.\n"
+		          "Please check if you done anything wrong...",
+		          buf);
+		return;
+	}
+
+	// parse the '\n' away
+	buf[strcspn(buf, "\n")] = '\0';
+
+	lo3_val temp = pars_resv(buf);
+
+	// transform lo3_val -> lo3_var
+	lo3_var newVar;
+	newVar.type = temp.chooseType;
+
+	if (!temp.chooseType) {
+		newVar.value.num = temp.value.num;
+	} else {
+		newVar.value.string = temp.value.string;
+	}
+
+	// correct the a1.~type
+	if (!a1.chooseType) {
+		snprintf(numNameBuf, sizeof(numNameBuf), "%d", a1.value.num);
+		name = numNameBuf;
+
+	} else {
+		name = a1.value.string;
+	}
+
+	var_set(name, newVar);
 }

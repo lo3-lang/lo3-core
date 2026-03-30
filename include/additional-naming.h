@@ -6,3 +6,14 @@
 #define ATYPE_var 0b01
 #define ATYPE_array 0b10
 #define ATYPE_string 0b11
+
+// sleep(ms) macro
+#ifdef _WIN32
+#inlcude < windows.h>
+#define ASLEEP(ms) Sleep(ms);
+
+#else // linux
+#include <unistd.h>
+#define ASLEEP(ms) slee((ms) * 1000) // mic sec -> ms
+
+#endif
