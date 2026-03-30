@@ -20,3 +20,10 @@ typedef struct {
 } lo3_varList;
 
 lo3_var *var_get(const char *name);
+
+///// from var.c /////
+void var_create(const char *name, int type);
+void var_set(const char *name, lo3_var value);
+void var_free(const char *name);
+void var_free_all(void);
+int var_find(const char *name);

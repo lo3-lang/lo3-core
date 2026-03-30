@@ -13,8 +13,12 @@ typedef enum {
 typedef struct {
 
 	lo3_types type;
-	int num;
-	char *string;
+	int chooseType;
+
+	union {
+		int num;
+		char *string;
+	} value;
 } lo3_val;
 
 typedef enum {

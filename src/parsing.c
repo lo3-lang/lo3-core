@@ -5,7 +5,7 @@ int currentLine = 0;
 
 int pars_isFileValid(char *name, FILE **file) {
 
-	*file = fopen(name, "r+");
+	*file = fopen(name, "r");
 
 	if (*file == NULL) {
 		return -1;
@@ -94,7 +94,7 @@ int pars_getToKnowType(char buffer[2], lo3_val val1, lo3_val val2) {
 			break;
 
 		default:
-			lo3_error("Invalid Type of <STRING> found!", values[i].string);
+			lo3_error("Invalid Type of <STRING> found!", values[i].value.string);
 			return 1;
 			break;
 		}
@@ -112,7 +112,7 @@ lo3_val pars_resv(char type[64]) {
 	// find the corresponding type
 	case TYPE_num:
 
-		result.num = atoi(&type[1]);
+		result.value.num = atoi(&type[1]);
 		break;
 
 	case TYPE_array:
@@ -122,7 +122,7 @@ lo3_val pars_resv(char type[64]) {
 
 	case TYPE_string:
 
-		result.string = type;
+		result.value.string = type;
 		break;
 
 	case TYPE_var:
@@ -139,9 +139,11 @@ lo3_val pars_resv(char type[64]) {
 		result.type = var->type;
 
 		if (!var->type) {
-			result.num = var->value.num;
+			result.value.num = var->value.num;
+			result.chooseType = 0;
 		} else {
-			result.string = var->value.string;
+			result.value.string = var->value.string;
+			result.chooseType = 3;
 		}
 		break;
 

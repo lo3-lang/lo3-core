@@ -18,6 +18,9 @@ int main(int argc, char *argv[]) {
 
 	var_init();
 	pars_file(file);
+
+	// cleanup
 	fclose(file);
+	var_freeAll();
 	return 0;
 }

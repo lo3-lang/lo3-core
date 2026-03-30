@@ -18,4 +18,6 @@ void lo3_error(const char *msg, const char *context);
 ///// from parsing.c /////
 extern int currentLine;
 
-void var_init(void);
+///// from var.c /////
+void var_init(void); // just exist here cuz: main.c is in need of this func.
+void var_freeAll(void);
