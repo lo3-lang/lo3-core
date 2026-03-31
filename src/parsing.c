@@ -166,6 +166,8 @@ lo3_val pars_resv(char type[64]) {
 		result.type = var->type ? TYPE_string : TYPE_num;
 		result.value = var->value;
 
+		result.chooseType = var->type ? 3 : 0;
+
 		// type: 0=num, 3=string (from ATYPE_ ... bitmasks, 1 and 2 are getting resolved,
 		// so it would be useless if you can write them)
 		break;
