@@ -86,7 +86,7 @@ void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
 	}
 
 	lo3_var newVar;
-	newVar.type = a2.chooseType;
+	newVar.type = (a2.chooseType == 3) ? 3 : 0;
 
 	if (!a2.chooseType) {
 		newVar.value.num = a2.value.num;
@@ -98,16 +98,122 @@ void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
 	var_set(name, newVar);
 }
 
+///// alu /////
+
 void exec_add(lo3_val a1, lo3_val a2, char array[2]) {
+
+	char buf[64];
+	char *name;
+
+	if (!a1.chooseType) {
+		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		name = buf;
+
+	} else {
+		name = a1.value.string;
+	}
+
+	if (var_find(name) == -1) {
+		lo3_error("Could not find this var, please check if you got something wrong", name);
+		return;
+	}
+
+	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
+
+	if (a2.chooseType) {
+		lo3_error("Arg1 requires TYPE String for +=", "");
+		return;
+	}
+
+	oldVar->value.num += a2.value.num;
+	var_set(name, *oldVar);
 }
 
 void exec_sub(lo3_val a1, lo3_val a2, char array[2]) {
+
+	char buf[64];
+	char *name;
+
+	if (!a1.chooseType) {
+		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		name = buf;
+
+	} else {
+		name = a1.value.string;
+	}
+
+	if (var_find(name) == -1) {
+		lo3_error("Could not find this var, please check if you got something wrong", name);
+		return;
+	}
+
+	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
+
+	if (a2.chooseType) {
+		lo3_error("Arg1 requires TYPE String for +=", "");
+		return;
+	}
+
+	oldVar->value.num -= a2.value.num;
+	var_set(name, *oldVar);
 }
 
 void exec_mul(lo3_val a1, lo3_val a2, char array[2]) {
+
+	char buf[64];
+	char *name;
+
+	if (!a1.chooseType) {
+		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		name = buf;
+
+	} else {
+		name = a1.value.string;
+	}
+
+	if (var_find(name) == -1) {
+		lo3_error("Could not find this var, please check if you got something wrong", name);
+		return;
+	}
+
+	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
+
+	if (a2.chooseType) {
+		lo3_error("Arg1 requires TYPE String for +=", "");
+		return;
+	}
+
+	oldVar->value.num *= a2.value.num;
+	var_set(name, *oldVar);
 }
 
 void exec_div(lo3_val a1, lo3_val a2, char array[2]) {
+
+	char buf[64];
+	char *name;
+
+	if (!a1.chooseType) {
+		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		name = buf;
+
+	} else {
+		name = a1.value.string;
+	}
+
+	if (var_find(name) == -1) {
+		lo3_error("Could not find this var, please check if you got something wrong", name);
+		return;
+	}
+
+	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
+
+	if (a2.chooseType) {
+		lo3_error("Arg1 requires TYPE String for +=", "");
+		return;
+	}
+
+	oldVar->value.num /= a2.value.num;
+	var_set(name, *oldVar);
 }
 
 void exec_jmp(lo3_val a1, lo3_val a2, char array[2]) {

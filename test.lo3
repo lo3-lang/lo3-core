@@ -1,0 +1,35 @@
+Modulo mit Memory-Cleanup (DIESMAL RICHTIG)
+
+#n _a $0
+#= _a $17
+
+#n _b $0
+#= _b $5
+
+--- DIV ---
+#n _div $0
+#= _div %a
+#/ _div %b
+#> _Division_fertig... $0
+
+--- TMP ---
+#n _tmp $0
+#= _tmp %b
+#* _tmp %div
+#> _Multiplikation_fertig... $0
+
+--- MOD ---
+#n _mod $0
+#= _mod %a
+#- _mod %tmp
+
+--- Output ---
+#> _Ergebnis: $0
+#> %mod $0
+
+--- CLEANUP ---
+#f _a $0
+#f _b $0
+#f _div $0
+#f _tmp $0
+#f _mod $0

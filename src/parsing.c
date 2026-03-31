@@ -42,7 +42,7 @@ int pars_file(FILE *file) {
 			continue;
 		}
 
-		if (strlen(line) < 8) {
+		if (strlen(line) < 3) {
 			lo3_warn("You used some kind of magic line,"
 			         "which is propaply not lo3-core syntax, are you sure you wanna do "
 			         "this???",
@@ -159,8 +159,7 @@ lo3_val pars_resv(char type[64]) {
 		lo3_var *var = var_get(&type[1]);
 
 		if (var == NULL) {
-			lo3_error("Could not resolve var, because it was invalid! Or empty.",
-			          &type[1]);
+			lo3_error("Could not resolve var, because it was invalid! Or empty.", "");
 			break;
 		}
 
@@ -171,9 +170,12 @@ lo3_val pars_resv(char type[64]) {
 		if (!var->type) {
 			result.value.num = var->value.num;
 			result.chooseType = 0;
+			result.type = TYPE_num;
+
 		} else {
 			result.value.string = var->value.string;
 			result.chooseType = 3;
+			result.type = TYPE_string;
 		}
 		break;
 
