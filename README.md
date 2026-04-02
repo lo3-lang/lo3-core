@@ -7,6 +7,18 @@ lo3 {FILENAME}
 ```
 This will start the interpreter and run your code.
 
+## Progress
+
+| Feature | Status |
+| :--- | :--- |
+| ALU Operations | Yes |
+| Control Flow | No |
+| Func Calling | No |
+| Input/STDIN | Yes |
+| Output/STDOUT | Yes |
+| Operating with vars | Yes |
+| Operating with g[] | No
+
 ## Compile it yourself
 
 ### Linux:
