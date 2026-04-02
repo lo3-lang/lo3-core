@@ -1,0 +1,16 @@
+#general
+name=Core
+description="Just the core lib. Main system for lo3"
+version=--not-depl-ready
+api-version=0
+author=seesee010
+License=GPL-2.0
+
+#dependencies
+count=[0,0]
+
+#func
+count=[0,0]
+
+#call-onError
+info="You can not call the core!"
