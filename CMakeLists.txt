@@ -10,4 +10,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/bin)
 file(GLOB SOURCES "src/*.c")
 add_executable(lo3 ${SOURCES})
 target_include_directories(lo3 PRIVATE include)
-target_link_libraries(lo3 PRIVATE dl)
+
+if(UNIX)
+    target_link_libraries(lo3 PRIVATE dl)
+endif()
