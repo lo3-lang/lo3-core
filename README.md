@@ -2,6 +2,8 @@
 
 [![Release](https://github.com/lo3-lang/lo3-core/actions/workflows/release.yml/badge.svg)](https://github.com/lo3-lang/lo3-core/actions/workflows/release.yml)
 
+> Currently the code is only available in linux, because in windows there is no getline ... 
+
 ## Run lo3 at your own machine
 
 ```bash
