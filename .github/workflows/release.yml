@@ -18,8 +18,8 @@ jobs:
 
       - name: Package
         run: |
-          tar -cf lo3-linux.tar -C build lo3
-          zip lo3-linux.zip build/lo3
+          tar -cf lo3-linux.tar -C bin lo3
+          zip lo3-linux.zip bin/lo3
           xz -zk lo3-linux.tar
 
       - name: Release
@@ -42,8 +42,8 @@ jobs:
 
       - name: Package
         run: |
-          Compress-Archive -Path build\Debug\lo3.exe -DestinationPath lo3-windows.zip
-          tar -cf lo3-windows.tar -C build/Debug lo3.exe
+          Compress-Archive -Path bin\lo3.exe -DestinationPath lo3-windows.zip
+          tar -cf lo3-windows.tar -C bin lo3.exe
           xz -zk lo3-windows.tar
 
       - name: Release
