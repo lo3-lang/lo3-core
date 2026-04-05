@@ -12,7 +12,7 @@
 lo3 is a token based interpreted programming language written in C.
 
 ## Website
-See [Main Website](https://lo3-lang.github.com)
+See [Main Website](https://lo3-lang.github.io)
 
 See [learn-the-syntax](https://lo3-lang.github.io/learn-the-syntax/) for examples and documentation.
 
