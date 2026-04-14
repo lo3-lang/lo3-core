@@ -1,4 +1,12 @@
+// New Var
 #n _a $0
+
+// assign
 #= _a $100
+
+// output
 #o %a $0
+
+// cleanup & exit(0)
 #f _a $0
+#0 $0 $0
