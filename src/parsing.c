@@ -94,8 +94,8 @@ int pars_file(FILE *file) {
 		}
 
 		free(line);
-		return 0;
 	}
+	return 0;
 }
 
 int pars_getToKnowType(char buffer[2], lo3_val val1, lo3_val val2) {
