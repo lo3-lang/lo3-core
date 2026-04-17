@@ -31,10 +31,10 @@ int pars_isFileValid(char *name, FILE **file) {
 
 int pars_file(FILE *file) {
 
-	char *line = NULL;
+	signed char *line = NULL;
 	size_t len = 0;
-	char arg1[64] = {0}, arg2[64] = {0};
-	char buff_types[2];
+	signed char arg1[64] = {0}, arg2[64] = {0};
+	unsigned char buff_types[2];
 
 	// todo: make getline avaible on other os
 	// 
@@ -86,7 +86,7 @@ int pars_file(FILE *file) {
 		// ///// More Information: /////
 		// here the program should parse the prefix, for example: '$' away.
 		// So the Exec dont have to do that.
-		int returnVal = pars_dispatch(cmds, a1, a2, buff_types);
+		signed int returnVal = pars_dispatch(cmds, a1, a2, buff_types);
 
 		if (returnVal != -1) {
 			free(line);
@@ -111,7 +111,7 @@ int pars_getToKnowType(char buffer[2], lo3_val val1, lo3_val val2) {
 	 * Both sides have that syntax.
 	 */
 
-	char num[2];
+	unsigned char num[2];
 
 	lo3_types possibleType[] = {val1.type, val2.type};
 	lo3_val values[] = {val1, val2};
