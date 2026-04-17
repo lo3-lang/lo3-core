@@ -94,6 +94,8 @@ int pars_file(FILE *file) {
 		}
 
 		free(line);
+		line = NULL;
+		len  = 0;
 	}
 	return 0;
 }
