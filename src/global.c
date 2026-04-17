@@ -101,16 +101,8 @@ int g_isSet(int index) {
 }
 
 int g_getType(int index) {
-
-	lo3_val buf;
-
-	if (index > 100 || index < 0) {
-		buf.chooseType = -1;
-		return buf;
-	}
-	
-	return  g.value[index].chooseType;
-
+	if (index >= G_SIZE || index < 0) return -1;
+	return g.value[index].chooseType;
 }
 
 int g_setType(int index, lo3_val type) {

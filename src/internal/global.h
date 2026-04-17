@@ -11,7 +11,7 @@ void g_set(int index, lo3_val value);
 
 int g_isSet(int index);
 
-lo3_val g_getType(int index);
+int g_getType(int index);
 
 int g_setType(int index, lo3_val type);
 
