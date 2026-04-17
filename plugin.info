@@ -3,8 +3,8 @@ name=Core
 description="Just the core lib. Main system for lo3"
 version=0.1
 api-version=0
+plugin-info-version=1
 author=seesee010
 License=GPL-2.0
 
 #dependencies
-count=[0,0]
