@@ -7,8 +7,8 @@
 
 void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	singed char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 
@@ -20,7 +20,7 @@ void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
 	}
 
 	// get the type
-	int type = (!a2.chooseType) ? a2.value.num : atoi(a2.value.string);
+	unsigned int type = (!a2.chooseType) ? a2.value.num : atoi(a2.value.string);
 
 	// duplication check
 	if (var_find(name) != -1) {
@@ -39,8 +39,8 @@ void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_free(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsinged char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -66,8 +66,8 @@ void exec_free(lo3_val a1, lo3_val a2, char array[2]) {
  */
 void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64], *name;
-	char numNameBuf[64];
+	unsinged char buf[64], *name;
+	unsigned char numNameBuf[64];
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -95,8 +95,8 @@ void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_add(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -123,8 +123,8 @@ void exec_add(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_sub(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -151,8 +151,8 @@ void exec_sub(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_mul(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -179,8 +179,8 @@ void exec_mul(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_div(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -224,8 +224,8 @@ void exec_label(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_out(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -239,11 +239,11 @@ void exec_out(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_in(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64]; // max limit of pars_resv();
-	char *res;
+	unsigned char buf[64] = {0}; // privides buf not initing
+	unsigned char *res;
 
-	char numNameBuf[64];
-	char *name;
+	unsigned har numNameBuf[64];
+	unsigned char *name;
 
 	res = fgets(buf, sizeof(buf), stdin);
 
