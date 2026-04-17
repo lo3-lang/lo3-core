@@ -101,7 +101,9 @@ int g_isSet(int index) {
 }
 
 int g_getType(int index) {
-	if (index >= G_SIZE || index < 0) return -1;
+	if (index >= G_SIZE || index < 0) {
+		return -1;
+	}
 	return g.value[index].chooseType;
 }
 
