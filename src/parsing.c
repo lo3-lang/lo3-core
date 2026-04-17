@@ -33,7 +33,7 @@ int pars_file(FILE *file) {
 
 	char *line = NULL;
 	size_t len = 0;
-	char arg1[64], arg2[64];
+	char arg1[64] = {0}, arg2[64] = {0};
 	char buff_types[2];
 
 	// todo: make getline avaible on other os
