@@ -190,7 +190,7 @@ lo3_val pars_resv(char type[64]) {
 		result.chooseType = 0;
 		break;
 
-	case TYPE_array:
+	case TYPE_array: {
 
 		// logic:
 		// *X, lookup X, resolve the value as long as it is a number,
@@ -199,12 +199,13 @@ lo3_val pars_resv(char type[64]) {
 		// not allowed: "*A"
 
 		// *100 -> _Hello
-		int value = g_get(atoi(&type[1]));
+		int value = atoi(&type[1]);
 
 		result.type = g_getType(value) ? TYPE_string : TYPE_num;
-		result.value = g_getValue(value);
+		result.value = g_getValue(value).value;
 		result.chooseType = g_getType(value) ? 3 : 0;
 		break;
+	}
 
 	case TYPE_string:
 
@@ -212,7 +213,7 @@ lo3_val pars_resv(char type[64]) {
 		result.chooseType = 3;
 		break;
 
-	case TYPE_var:
+	case TYPE_var: {
 
 		// resolve var
 		lo3_var *var = var_get(&type[1]);
@@ -233,6 +234,7 @@ lo3_val pars_resv(char type[64]) {
 		// todo:
 		// If double exists: var need to resolve this!
 		break;
+	}
 
 	case TYPE_double:
 
