@@ -24,3 +24,6 @@ extern int currentLine;
 ///// from var.c /////
 void var_init(void); // just exist here cuz: main.c is in need of this func.
 void var_freeAll(void);
+
+extern FILE *openFile;
+extern int currentLine;

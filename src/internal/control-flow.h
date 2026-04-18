@@ -3,15 +3,24 @@
 // true and false so it is more fancy!
 #define TRUE 1
 #define FALSE 0
-#define NOFREE -1
+#define ARRAY_SIZE 254
 
-unsigned char rush = FALSE;
-unsigned char isWarped = FALSE;
+extern char rush;
+extern char isWarped;
 
-typedef struct {
-	char *names[254] = {};
+typedef struct lo3_label {
+	char *names[ARRAY_SIZE];
 
 	// -1 tracks the next pos
-	int pos[254];        // could be fixed by importing size_t
-	int nextFreePos = 0; // if NOFREE it will lo3_error() that it is full!
+	int pos[ARRAY_SIZE]; // could be fixed by importing size_t
+	int nextFreePos;     // if nextFreePos = ARRAY_SIZE, array is full!
 } lo3_label;
+
+extern lo3_label cf;
+
+int cf_addLabel(const char *name, const int pos);
+int cf_jumpToLabel(const char *name);
+int cf_findLabel(const char *name);
+
+void cf_setCursorPos(const int i);
+int cf_getCursorPos(void);

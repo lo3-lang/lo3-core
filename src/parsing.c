@@ -6,9 +6,11 @@
 
 #include "./internal/bare-define.h"
 #include "./internal/bare-var.h"
+#include "./internal/control-flow.h"
 #include "./internal/core.h"
 #include "./internal/global.h"
 #include "./internal/specific-language.h"
+#include <stdio.h>
 
 volatile char LO3_STARTING_LINE = '#';
 
@@ -39,6 +41,8 @@ int pars_file(FILE *file) {
 	signed char arg1[64] = {0}, arg2[64] = {0};
 	unsigned char buff_types[2];
 
+	int pos0 = ftell(file);
+
 	// todo: make getline avaible on other os
 	//
 	// ///// MORE INFORMATIONS /////
@@ -46,6 +50,8 @@ int pars_file(FILE *file) {
 	// Ways to solve that problem:
 	// - Create a getline MACRO and use that here
 	// - use the preprocessor funcs, like ifdef check for linux and win etc
+
+parsing:
 	while (getline(&line, &len, file) != -1) {
 
 		currentLine++;
@@ -103,6 +109,19 @@ int pars_file(FILE *file) {
 		free(line);
 		line = NULL;
 		len = 0;
+	}
+
+	if (rush) {
+		fseek(file, pos0, SEEK_SET);
+
+		if (!isWarped) {
+			isWarped = TRUE;
+			goto parsing;
+
+		} else {
+			lo3_error("Could not find the label, did you misspell it???", "");
+			return -1;
+		}
 	}
 	return 0;
 }
