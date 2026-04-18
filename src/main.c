@@ -18,6 +18,8 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
+	FILE *openFile = file;
+
 	var_init();
 	pars_file(file);
 

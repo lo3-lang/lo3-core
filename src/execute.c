@@ -4,6 +4,7 @@
 #include "./internal/bare-var.h"
 #include "./internal/core.h"
 #include "./internal/specific-language.h"
+#include "internal/control-flow.h"
 
 void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
 
@@ -210,16 +211,55 @@ void exec_div(lo3_val a1, lo3_val a2, char array[2]) {
 	var_setNum(name, var_getNum(oldVar) / a2.value.num);
 }
 
+// will cmp and jmp! #?
 void exec_jmp(lo3_val a1, lo3_val a2, char array[2]) {
+
+	char buf[64];
+	char *name;
+
+	if (!a1.chooseType) {
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		name = buf;
+	} else {
+		name = a1.value.string;
+	}
+
+	rush = TRUE;
+
+	if (cf_findLabel(name) == -1) {
+		return;
+	}
+
+	cf_jumpToLabel(name);
+	return;
 }
 
+// #c
 void exec_call(lo3_val a1, lo3_val a2, char array[2]) {
 }
 
+// #C - not in use - UB
 void exec_callS(lo3_val a1, lo3_val a2, char array[2]) {
 }
 
 void exec_label(lo3_val a1, lo3_val a2, char array[2]) {
+
+	char buf[64];
+	char *name;
+
+	if (!a1.chooseType) {
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		name = buf;
+	} else {
+		name = a1.value.string;
+	}
+
+	if (cf_findLabel(name) != -1) {
+		lo3_error("Label name already exists!", name);
+		return;
+	}
+
+	cf_addLabel(name, currentLine);
 }
 
 void exec_out(lo3_val a1, lo3_val a2, char array[2]) {
@@ -228,13 +268,13 @@ void exec_out(lo3_val a1, lo3_val a2, char array[2]) {
 	char *name;
 
 	if (!a1.chooseType) {
-		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
 		name = buf;
 	} else {
 		name = a1.value.string;
 	}
 
-	printf("%s\n", name);
+	printf("%63s\n", name);
 }
 
 void exec_in(lo3_val a1, lo3_val a2, char array[2]) {
