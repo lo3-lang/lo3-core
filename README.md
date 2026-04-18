@@ -36,7 +36,7 @@ This will start the interpreter and run your code.
 | Input/STDIN | ✅ |
 | Output/STDOUT | ✅ |
 | Operating with vars | ✅ |
-| Operating with g[] | ❌ |
+| Operating with g[] | ⚠️ |
 | Manually exiting with 0 or 1 | ✅ |
 | Auto exiting | ✅ |
 
