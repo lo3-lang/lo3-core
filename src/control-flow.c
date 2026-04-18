@@ -1,7 +1,10 @@
 #include "./internal/control-flow.h"
 #include "./internal/core.h"
 #include "./internal/specific-language.h"
+
 lo3_label cf;
+char rush = FALSE;
+char isWarped = FALSE;
 
 int cf_findLabel(const char *name) {
 

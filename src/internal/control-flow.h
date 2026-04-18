@@ -5,8 +5,8 @@
 #define FALSE 0
 #define ARRAY_SIZE 254
 
-unsigned char rush = FALSE;
-unsigned char isWarped = FALSE;
+extern char rush;
+extern char isWarped;
 
 typedef struct lo3_label {
 	char *names[ARRAY_SIZE];
