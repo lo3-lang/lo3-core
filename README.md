@@ -83,3 +83,11 @@ In path add a new index and input there the path to this program.
 
 For example:
 `C:\Users\yourUserName\Desktop\lo3-core\build\`
+
+## Tests
+Tests are written in C++, Rust and Python to avoid language-level bias when testing a C core.
+
+```bash
+# run all tests
+cmake --build build --target test
+```
