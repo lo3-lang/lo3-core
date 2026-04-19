@@ -6,3 +6,4 @@ build_pain/
 build_plain/
 build_test/
 .claude/
+test/unit/rust/target/
