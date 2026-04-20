@@ -1,5 +1,7 @@
 #include "./internal/core.h"
 #include "./internal/bare-var.h"
+#include "./internal/control-flow.h"
+#include <emscripten.h>
 #include <stdio.h>
 #include <string.h>
 
