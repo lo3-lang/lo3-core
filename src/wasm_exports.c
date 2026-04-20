@@ -25,6 +25,7 @@ int lo3_run(const char* code) {
         return -1;
     }
 
+    openFile = mem_file;
     var_init();
     rush = FALSE;
     isWarped = FALSE;

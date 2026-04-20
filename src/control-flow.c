@@ -65,6 +65,6 @@ int cf_jumpToLabel(const char *name) {
 		return -1;
 	}
 
-	cf_setCursorPos(index);
+	cf_setCursorPos(cf.pos[index]);
 	return 0;
 }
