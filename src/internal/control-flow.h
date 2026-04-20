@@ -17,6 +17,7 @@ typedef struct lo3_label {
 	int nextFreePos;     // if nextFreePos = ARRAY_SIZE, array is full!
 } lo3_label;
 
+void cf_reset(void);
 extern lo3_label cf;
 
 int cf_addLabel(const char *name, const int pos);

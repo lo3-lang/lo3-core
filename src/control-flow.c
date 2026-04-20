@@ -7,6 +7,10 @@ char rush = FALSE;
 char isWarped = FALSE;
 char *rush_target = NULL;
 
+void cf_reset(void) {
+	cf.nextFreePos = 0;
+}
+
 int cf_findLabel(const char *name) {
 
 	for (int i = 0; i < cf.nextFreePos; i++) {
