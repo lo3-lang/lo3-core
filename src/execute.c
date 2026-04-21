@@ -335,7 +335,10 @@ void exec_cmp(lo3_val a1, lo3_val a2, char array[2]) {
 
 	lo3_val true, false;
 	true.value.num = TRUE;
+	true.chooseType = 0;
+
 	false.value.num = FALSE;
+	false.chooseType = 0;
 
 	if (a1.value.num == a2.value.num) {
 		g_set(0, true);
@@ -355,7 +358,10 @@ void exec_small(lo3_val a1, lo3_val a2, char array[2]) {
 
 	lo3_val true, false;
 	true.value.num = TRUE;
+	true.chooseType = 0;
+
 	false.value.num = FALSE;
+	false.chooseType = 0;
 
 	if (a1.value.num < a2.value.num) {
 		g_set(0, true);
@@ -375,7 +381,10 @@ void exec_big(lo3_val a1, lo3_val a2, char array[2]) {
 
 	lo3_val true, false;
 	true.value.num = TRUE;
+	true.chooseType = 0;
+
 	false.value.num = FALSE;
+	false.chooseType = 0;
 
 	if (a1.value.num > a2.value.num) {
 		g_set(0, true);
