@@ -201,6 +201,10 @@ void g_fasterInit(char *line) {
 
 		ip += off;
 
+		if (*ip == ',') {
+			ip++; // skip ','
+		}
+
 		// todo:
 		// this code should really use g_setValue(), but by now it is not avaible!
 		//
