@@ -36,6 +36,3 @@ endfunction()
 
 # test_parsing.c: only C test remaining (FILE* / getline easier in C)
 add_lo3_test(test_parsing "${LO3_CORE_SOURCES}")
-
-# test_execute.c: unit tests for exec_cmp, exec_small, exec_big, exec_label
-add_lo3_test(test_execute "${LO3_CORE_SOURCES}")
