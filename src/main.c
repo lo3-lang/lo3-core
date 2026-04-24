@@ -10,8 +10,8 @@ FILE *openFile = NULL;
 int main(int argc, char *argv[]) {
 
 	if (argc < 2) {
-		lo3_error("You must input more args then none!", NULL);
-		return 1;
+		lo3_error("Please provide more arguments!, "");
+		return 0;
 	}
 
 	FILE *file;

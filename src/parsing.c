@@ -11,6 +11,7 @@
 #include "./internal/global.h"
 #include "./internal/specific-language.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 volatile char LO3_STARTING_LINE = '#';
 
@@ -58,8 +59,18 @@ parsing:
 		currentLine++;
 		line[strcspn(line, "\n")] = '\0';
 
+		// syntax sugar
 		if (line[0] == '@') {
-			LO3_STARTING_LINE = line[1];
+
+			if (line[1] == '.') {
+				LO3_STARTING_LINE = line[2];
+
+			} else if (line[1] == '{') {
+				// @{1:$10,10:_Hello}
+				// index | type | word
+
+				g_fasterInit(line);
+			}
 		}
 
 		if (line[0] != LO3_STARTING_LINE) {
@@ -351,6 +362,19 @@ int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2, char array[2]) {
 
 	case RET_bad:
 		return 1;
+
+	case CNT_cmp:
+
+		exec_cmp(a1, a2, array);
+		break;
+
+	case CNT_small:
+		exec_small(a1, a2, array);
+		break;
+
+	case CNT_big:
+		exec_big(a1, a2, array);
+		break;
 
 	default:
 		lo3_error("Unknown command!", "");
