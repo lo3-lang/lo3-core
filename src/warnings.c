@@ -23,6 +23,7 @@ void lo3_error(const char *msg, const char *context) {
 
 	if (msg == NULL || msg[0] == '\0') {
 		lo3_warn("Could not error, because there was no error message for the error", NULL);
+		return;
 	}
 
 	if (context != NULL) {

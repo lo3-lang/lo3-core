@@ -3,13 +3,20 @@
 //
 // You can find todos by reading the "todo" blocks.
 // But please read the whole block not only the single todo line
-#include "./internal/bare-var.h"
-#include "./internal/core.h"
+
 #include "./internal/bare-define.h"
-#include "./internal/specific-language.h"
+#include "./internal/bare-var.h"
+#include "./internal/control-flow.h"
+#include "./internal/core.h"
 #include "./internal/global.h"
+#include "./internal/specific-language.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+volatile char LO3_STARTING_LINE = '#';
 
 int currentLine = 0;
+int lastLineOffset = 0;
 
 int pars_isFileValid(char *name, FILE **file) {
 
@@ -33,22 +40,40 @@ int pars_file(FILE *file) {
 
 	char *line = NULL;
 	size_t len = 0;
-	char arg1[64], arg2[64];
-	char buff_types[2];
+	char arg1[64] = {0}, arg2[64] = {0};
+	unsigned char buff_types[2];
+
+	int pos0 = ftell(file);
 
 	// todo: make getline avaible on other os
-	// 
+	//
 	// ///// MORE INFORMATIONS /////
 	// getline is not a c standardized lib and therefore should be defined somewhere else.
 	// Ways to solve that problem:
 	// - Create a getline MACRO and use that here
 	// - use the preprocessor funcs, like ifdef check for linux and win etc
-	while (getline(&line, &len, file) != -1) {
+
+parsing:
+	while (lastLineOffset = ftell(file), GETLINE(&line, &len, file)) {
 
 		currentLine++;
 		line[strcspn(line, "\n")] = '\0';
 
-		if (line[0] != '#') {
+		// syntax sugar
+		if (line[0] == '@') {
+
+			if (line[1] == '.') {
+				LO3_STARTING_LINE = line[2];
+
+			} else if (line[1] == '{') {
+				// @{1:$10,10:_Hello}
+				// index | type | word
+
+				g_fasterInit(line);
+			}
+		}
+
+		if (line[0] != LO3_STARTING_LINE) {
 			continue;
 		}
 
@@ -67,7 +92,7 @@ int pars_file(FILE *file) {
 		// could lead to wrong var names, but else it could eventually crash.
 		// Both are not that great.
 		// maybe there could be a check or lo3_warn() about wrong var name size.
-		
+
 		(void)sscanf(&line[3], " %63s %63s", arg1, arg2);
 
 		lo3_val a1 = pars_resv(arg1);
@@ -86,7 +111,7 @@ int pars_file(FILE *file) {
 		// ///// More Information: /////
 		// here the program should parse the prefix, for example: '$' away.
 		// So the Exec dont have to do that.
-		int returnVal = pars_dispatch(cmds, a1, a2, buff_types);
+		signed int returnVal = pars_dispatch(cmds, a1, a2, buff_types);
 
 		if (returnVal != -1) {
 			free(line);
@@ -94,8 +119,23 @@ int pars_file(FILE *file) {
 		}
 
 		free(line);
-		return 0;
+		line = NULL;
+		len = 0;
 	}
+
+	if (rush) {
+		fseek(file, pos0, SEEK_SET);
+
+		if (!isWarped) {
+			isWarped = TRUE;
+			goto parsing;
+
+		} else {
+			lo3_error("Could not find the label, did you misspell it???", "");
+			return -1;
+		}
+	}
+	return 0;
 }
 
 int pars_getToKnowType(char buffer[2], lo3_val val1, lo3_val val2) {
@@ -109,7 +149,7 @@ int pars_getToKnowType(char buffer[2], lo3_val val1, lo3_val val2) {
 	 * Both sides have that syntax.
 	 */
 
-	char num[2];
+	unsigned char num[2];
 
 	lo3_types possibleType[] = {val1.type, val2.type};
 	lo3_val values[] = {val1, val2};
@@ -153,6 +193,9 @@ lo3_val pars_resv(char type[64]) {
 	lo3_val result;
 	result.type = type[0];
 
+	int value;
+	lo3_var *var;
+
 	switch (result.type) {
 
 	// find the corresponding type
@@ -169,13 +212,14 @@ lo3_val pars_resv(char type[64]) {
 		// 0 - 9 counts as values
 		//
 		// not allowed: "*A"
-		
-		// *100 -> _Hello
-		int value = g_get(atoi(&type[1]));
 
-		result.type = g_getType(value) ? TYPE_string : TYPE_num;
-		result.value = g_getValue(value);
-		result.chooseType = g_getType(value) ? 3 : 0;
+		// *100 -> _Hello
+		int idx = atoi(&type[1]);
+		lo3_val value = g_get(atoi(&type[1]));
+
+		result.type = value.chooseType ? TYPE_string : TYPE_num;
+		result.value = value.value;
+		result.chooseType = value.chooseType ? 3 : 0;
 		break;
 
 	case TYPE_string:
@@ -187,7 +231,7 @@ lo3_val pars_resv(char type[64]) {
 	case TYPE_var:
 
 		// resolve var
-		lo3_var *var = var_get(&type[1]);
+		var = var_get(&type[1]);
 
 		if (var == NULL) {
 			lo3_error("Could not resolve var, because it was invalid! Or empty.", "");
@@ -233,6 +277,20 @@ lo3_val pars_resv(char type[64]) {
 // Now array is very useless and not very helping. Now lo3_val has chooseType to choose its
 // type.
 int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2, char array[2]) {
+
+	if (rush) {
+
+		switch (cmd) {
+		case CNT_label:
+			exec_label(a1, a2, array);
+			break;
+
+		default:
+			break;
+		}
+
+		return -1;
+	}
 
 	switch (cmd) {
 
@@ -300,13 +358,23 @@ int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2, char array[2]) {
 		break;
 
 	case RET_good:
-
-		lo3_warn("Now it will stop the interpreter.\nEXITCODE: 0", "");
 		return 0;
 
 	case RET_bad:
-		lo3_warn("Now it will stop the interpreter\nEXITCODE: 1", "");
 		return 1;
+
+	case CNT_cmp:
+
+		exec_cmp(a1, a2, array);
+		break;
+
+	case CNT_small:
+		exec_small(a1, a2, array);
+		break;
+
+	case CNT_big:
+		exec_big(a1, a2, array);
+		break;
 
 	default:
 		lo3_error("Unknown command!", "");

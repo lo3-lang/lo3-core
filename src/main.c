@@ -3,13 +3,14 @@
 
 #include "./internal/core.h"
 #include "internal/bare-var.h"
-#include <stdio.h>
+#include "./internal/cf-define.h"
 
+FILE *openFile = NULL;
 int main(int argc, char *argv[]) {
 
 	if (argc < 2) {
-		lo3_error("You must input more args then none!", NULL);
-		return 1;
+		lo3_error("Please provide more arguments!", "");
+		return 0;
 	}
 
 	FILE *file;
@@ -17,6 +18,8 @@ int main(int argc, char *argv[]) {
 		lo3_error("Could not load the coresponding file!", argv[1]);
 		return 1;
 	}
+
+	openFile = file;
 
 	var_init();
 	pars_file(file);

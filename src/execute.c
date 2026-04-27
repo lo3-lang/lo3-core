@@ -3,12 +3,15 @@
 
 #include "./internal/bare-var.h"
 #include "./internal/core.h"
+#include "./internal/global.h"
 #include "./internal/specific-language.h"
+#include "internal/control-flow.h"
+#include <string.h>
 
 void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 
@@ -20,7 +23,7 @@ void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
 	}
 
 	// get the type
-	int type = (!a2.chooseType) ? a2.value.num : atoi(a2.value.string);
+	unsigned int type = (!a2.chooseType) ? a2.value.num : atoi(a2.value.string);
 
 	// duplication check
 	if (var_find(name) != -1) {
@@ -39,8 +42,8 @@ void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_free(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -66,8 +69,8 @@ void exec_free(lo3_val a1, lo3_val a2, char array[2]) {
  */
 void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64], *name;
-	char numNameBuf[64];
+	unsigned char buf[64], *name;
+	unsigned char numNameBuf[64];
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -95,8 +98,8 @@ void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_add(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -123,8 +126,8 @@ void exec_add(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_sub(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -142,7 +145,7 @@ void exec_sub(lo3_val a1, lo3_val a2, char array[2]) {
 	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
 
 	if (a2.chooseType) {
-		lo3_error("Arg1 requires TYPE String for +=", "");
+		lo3_error("Arg1 requires TYPE String for -=", "");
 		return;
 	}
 
@@ -151,8 +154,8 @@ void exec_sub(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_mul(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -170,7 +173,7 @@ void exec_mul(lo3_val a1, lo3_val a2, char array[2]) {
 	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
 
 	if (a2.chooseType) {
-		lo3_error("Arg1 requires TYPE String for +=", "");
+		lo3_error("Arg1 requires TYPE String for *=", "");
 		return;
 	}
 
@@ -179,8 +182,8 @@ void exec_mul(lo3_val a1, lo3_val a2, char array[2]) {
 
 void exec_div(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64];
-	char *name;
+	unsigned char buf[64];
+	unsigned char *name;
 
 	if (!a1.chooseType) {
 		snprintf(buf, sizeof(buf), "%d", a1.value.num);
@@ -198,47 +201,106 @@ void exec_div(lo3_val a1, lo3_val a2, char array[2]) {
 	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
 
 	if (a2.chooseType) {
-		lo3_error("Arg1 requires TYPE String for +=", "");
+		lo3_error("Arg1 requires TYPE String for /=", "");
+		return;
+	}
+
+	if (a2.value.num == 0) {
+		lo3_error("Division by zero", name);
 		return;
 	}
 
 	var_setNum(name, var_getNum(oldVar) / a2.value.num);
 }
 
+// will cmp and jmp! #?
 void exec_jmp(lo3_val a1, lo3_val a2, char array[2]) {
-}
 
-void exec_call(lo3_val a1, lo3_val a2, char array[2]) {
-}
+	char buf[64], buf2[64];
+	char *name, *name2;
 
-void exec_callS(lo3_val a1, lo3_val a2, char array[2]) {
-}
-
-void exec_label(lo3_val a1, lo3_val a2, char array[2]) {
-}
-
-void exec_out(lo3_val a1, lo3_val a2, char array[2]) {
-
-	char buf[64];
-	char *name;
-
+	// label
 	if (!a1.chooseType) {
-		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
 		name = buf;
 	} else {
 		name = a1.value.string;
 	}
 
-	printf("%s\n", name);
+	if (cf_findLabel(name) == -1) {
+		return;
+	}
+
+	// g[0] == name2
+	if (a2.chooseType != 0) {
+		lo3_error("Illegal type, here arg1 must be an integer value to compare against!",
+		          "");
+		return;
+	}
+
+	if (g_getNum(0) == a2.value.num) {
+		rush = TRUE;
+
+		(void)strncpy(rush_target, name, sizeof(rush_target) - 1);
+		cf_jumpToLabel(name);
+	}
+	return;
+}
+
+// #c
+void exec_call(lo3_val a1, lo3_val a2, char array[2]) {
+}
+
+// #C - not in use - UB
+void exec_callS(lo3_val a1, lo3_val a2, char array[2]) {
+}
+
+void exec_label(lo3_val a1, lo3_val a2, char array[2]) {
+
+	char buf[64];
+	char *name;
+
+	if (!a1.chooseType) {
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		name = buf;
+	} else {
+		name = a1.value.string;
+	}
+
+	if (cf_findLabel(name) != -1) {
+
+		if (rush && !strcmp(rush_target, name)) {
+			rush = FALSE;
+			return;
+		}
+		return;
+	}
+
+	cf_addLabel(name, lastLineOffset);
+}
+
+void exec_out(lo3_val a1, lo3_val a2, char array[2]) {
+
+	unsigned char buf[64];
+	unsigned char *name;
+
+	if (!a1.chooseType) {
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		name = buf;
+	} else {
+		name = a1.value.string;
+	}
+
+	printf("%63s\n", name);
 }
 
 void exec_in(lo3_val a1, lo3_val a2, char array[2]) {
 
-	char buf[64]; // max limit of pars_resv();
-	char *res;
+	unsigned char buf[64] = {0}; // privides buf not initing
+	unsigned char *res;
 
-	char numNameBuf[64];
-	char *name;
+	unsigned char numNameBuf[64];
+	unsigned char *name;
 
 	res = fgets(buf, sizeof(buf), stdin);
 
@@ -263,8 +325,77 @@ void exec_in(lo3_val a1, lo3_val a2, char array[2]) {
 	}
 
 	if (!a2.chooseType) {
-		var_setNum(name, temp);
+		var_setNum(name, temp.value.num);
 	} else {
-		var_setString(name, temp);
+		var_setString(name, temp.value.string);
 	}
+}
+
+// compare num == num, if true -> g[0] = 1, else g[0] = 0;!!!
+void exec_cmp(lo3_val a1, lo3_val a2, char array[2]) {
+
+	if (a1.chooseType || a2.chooseType) {
+		lo3_error("You can not compare char*'s,\n"
+	    "Please use the coresponding std-func!, from {string.c}", "");
+		return;
+	}
+
+	lo3_val true, false;
+	true.value.num = TRUE;
+	true.chooseType = 0;
+
+	false.value.num = FALSE;
+	false.chooseType = 0;
+
+	if (a1.value.num == a2.value.num) {
+		g_set(0, true);
+		return;
+	}
+	g_set(0, false);
+}
+
+// compare num < num, if true -> g[0] = 1, else g[0] = 0;!!!
+void exec_small(lo3_val a1, lo3_val a2, char array[2]) {
+
+	if (a1.chooseType || a2.chooseType) {
+		lo3_error("You can not compare char*'s,\n"
+	    "Please use the coresponding std-func!, from {string.c}", "");
+		return;
+	}
+
+	lo3_val true, false;
+	true.value.num = TRUE;
+	true.chooseType = 0;
+
+	false.value.num = FALSE;
+	false.chooseType = 0;
+
+	if (a1.value.num < a2.value.num) {
+		g_set(0, true);
+		return;
+	}
+	g_set(0, false);
+}
+
+// compare num > num, if true -> g[0] = 1, else g[0] = 0;!!!
+void exec_big(lo3_val a1, lo3_val a2, char array[2]) {
+
+	if (a1.chooseType || a2.chooseType) {
+		lo3_error("You can not compare char*'s,\n"
+	    "Please use the coresponding std-func!, from {string.c}", "");
+		return;
+	}
+
+	lo3_val true, false;
+	true.value.num = TRUE;
+	true.chooseType = 0;
+
+	false.value.num = FALSE;
+	false.chooseType = 0;
+
+	if (a1.value.num > a2.value.num) {
+		g_set(0, true);
+		return;
+	}
+	g_set(0, false);
 }

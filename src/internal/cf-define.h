@@ -1,0 +1,4 @@
+#include <stdio.h>
+
+///// main.c /////
+extern FILE *openFile;

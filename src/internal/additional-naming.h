@@ -9,11 +9,11 @@
 
 // sleep(ms) macro
 #ifdef _WIN32
-#include < windows.h>
+#include <windows.h>
 #define ASLEEP(ms) Sleep(ms);
 
 #else // linux
 #include <unistd.h>
-#define ASLEEP(ms) slee((ms) * 1000) // mic sec -> ms
+#define ASLEEP(ms) usleep((ms) * 1000) // mic sec -> ms
 
 #endif

@@ -8,7 +8,11 @@
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/lo3-lang/lo3-core)
 
 
-> Currently the code is only available in linux, because in windows there is no getline ... 
+> Currently the code is only available on linux, because in windows there is no getline ...
+
+> [!NOTE]
+> Claude Code is not used for the core func of this repo.
+> Only for bug fixes, test/ (human in a loop - version)
 
 ## What is this language about?
 lo3 is a token based interpreted programming language written in C.
@@ -30,12 +34,12 @@ This will start the interpreter and run your code.
 | Feature | Status |
 | :--- | :--- |
 | ALU Operations | ✅ |
-| Control Flow | ❌ |
+| Control Flow | ✅ |
 | Func Calling | ❌ |
 | Input/STDIN | ✅ |
 | Output/STDOUT | ✅ |
 | Operating with vars | ✅ |
-| Operating with g[] | ❌ |
+| Operating with g[] | ⚠️ |
 | Manually exiting with 0 or 1 | ✅ |
 | Auto exiting | ✅ |
 
@@ -79,3 +83,11 @@ In path add a new index and input there the path to this program.
 
 For example:
 `C:\Users\yourUserName\Desktop\lo3-core\build\`
+
+## Tests
+Tests are written in C++, Rust and Python to avoid language-level bias when testing a C core.
+
+```bash
+# run all tests
+cmake --build build --target test
+```
