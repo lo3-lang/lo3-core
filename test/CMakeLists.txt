@@ -18,6 +18,7 @@ set(LO3_CORE_SOURCES
     ${LO3_SRC}/control-flow.c
     ${LO3_SRC}/execute.c
     ${LO3_SRC}/parsing.c
+    ${LO3_SRC}/lo3-getLine.c
     ${LO3_SRC}/warnings.c
 )
 
