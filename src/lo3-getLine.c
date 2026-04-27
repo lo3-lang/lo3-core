@@ -1,10 +1,32 @@
 #include "./internal/core.h"
 
-lo3_getLine(&(line), &(len), (file)) {
-	int *buf = malloc(sizeof(int[256]));
+#ifdef _WIN32
 
-	if (buf == NULL) {
-		return -2;
+int lo3_getLine(char **lineptr, size_t *n, FILE *stream) {
+	if (*lineptr == NULL || *n == 0) {
+		*n = 128;
+		*lineptr = malloc(*n);
+		if (*lineptr == NULL) return -2;
 	}
-	free(buf);
+
+	size_t pos = 0;
+	int c;
+
+	while ((c = fgetc(stream)) != EOF) {
+		if (pos + 2 > *n) {
+			*n *= 2;
+			char *tmp = realloc(*lineptr, *n);
+			if (tmp == NULL) return -2;
+			*lineptr = tmp;
+		}
+		(*lineptr)[pos++] = (char)c;
+		if (c == '\n') break;
+	}
+
+	if (pos == 0) return 1;
+
+	(*lineptr)[pos] = '\0';
+	return 0;
 }
+
+#endif
