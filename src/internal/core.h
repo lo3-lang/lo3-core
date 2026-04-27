@@ -15,6 +15,19 @@ int pars_file(FILE *file);
 #define CLR_RESET "\033[0m"
 #define CLR_BOLD "\033[1m"
 
+#ifdef _WIN32
+extern typedef long long ssize_t;
+ssize_t lo3_getLine(char **lineptr, size_t *n, FILE *stream);
+
+#define GETLINE(line, len, file) \
+	(lo3_getLine(&(line), &(len), (file)) != -1)
+
+#elif __linux__
+#define GETLINE(line, len, file) \
+	(getline(&(line), &(len), (file)) != -1)
+
+#endif
+
 void lo3_warn(const char *msg, const char *context);
 void lo3_error(const char *msg, const char *context);
 
