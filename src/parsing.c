@@ -54,7 +54,7 @@ int pars_file(FILE *file) {
 	// - use the preprocessor funcs, like ifdef check for linux and win etc
 
 parsing:
-	while (lastLineOffset = ftell(file), getline(&line, &len, file) != -1) {
+	while (lastLineOffset = ftell(file), GETLINE(&line, &len, file)) {
 
 		currentLine++;
 		line[strcspn(line, "\n")] = '\0';

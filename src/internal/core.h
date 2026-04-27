@@ -16,15 +16,14 @@ int pars_file(FILE *file);
 #define CLR_BOLD "\033[1m"
 
 #ifdef _WIN32
-extern typedef long long ssize_t;
 ssize_t lo3_getLine(char **lineptr, size_t *n, FILE *stream);
 
 #define GETLINE(line, len, file) \
-	(lo3_getLine(&(line), &(len), (file)) != -1)
+	(lo3_getLine((line), (len), (file)) != -1)
 
 #elif __linux__
 #define GETLINE(line, len, file) \
-	(getline(&(line), &(len), (file)) != -1)
+	(getline((line), (len), (file)) != -1)
 
 #endif
 
@@ -37,6 +36,3 @@ extern int currentLine;
 ///// from var.c /////
 void var_init(void); // just exist here cuz: main.c is in need of this func.
 void var_freeAll(void);
-
-extern FILE *openFile;
-extern int currentLine;
