@@ -3,7 +3,7 @@
 
 #include "./internal/core.h"
 #include "internal/bare-var.h"
-#include <stdio.h>
+#include "./internal/cf-define.h"
 
 FILE *openFile = NULL;
 int main(int argc, char *argv[]) {

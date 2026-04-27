@@ -1,5 +1,6 @@
 #include "./internal/control-flow.h"
 #include "./internal/core.h"
+#include "./internal/cf-define.h"
 #include "./internal/specific-language.h"
 #include <string.h>
 
