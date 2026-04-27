@@ -3,10 +3,9 @@
 #ifdef _WIN32
 
 int lo3_getLine(char **lineptr, size_t *n, FILE *stream) {
-	if (*lineptr == NULL || *n == 0) {
-		*n = 128;
-		*lineptr = malloc(*n);
-		if (*lineptr == NULL) return -1;
+	if (!*lineptr || !*n) {
+		*lineptr = malloc(*n = 128);
+		if (!*lineptr) return -1;
 	}
 
 	size_t pos = 0;
@@ -14,16 +13,15 @@ int lo3_getLine(char **lineptr, size_t *n, FILE *stream) {
 
 	while ((c = fgetc(stream)) != EOF) {
 		if (pos + 2 > *n) {
-			*n *= 2;
-			char *tmp = realloc(*lineptr, *n);
-			if (tmp == NULL) return -1;
+			char *tmp = realloc(*lineptr, *n *= 2);
+			if (!tmp) return -1;
 			*lineptr = tmp;
 		}
 		(*lineptr)[pos++] = (char)c;
 		if (c == '\n') break;
 	}
 
-	if (pos == 0) return -1;
+	if (!pos) return -1;
 
 	(*lineptr)[pos] = '\0';
 	return (int)pos;
