@@ -358,6 +358,7 @@ int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2, char array[2]) {
 		break;
 
 	case RET_good:
+		lo3_warn("EXITCODE: 0", "");
 		return 0;
 
 	case RET_bad:
