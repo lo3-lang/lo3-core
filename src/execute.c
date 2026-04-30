@@ -6,6 +6,8 @@
 #include "./internal/global.h"
 #include "./internal/specific-language.h"
 #include "internal/control-flow.h"
+#include <errno.h>
+#include <limits.h>
 #include <string.h>
 
 void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
@@ -23,7 +25,19 @@ void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
 	}
 
 	// get the type
-	unsigned int type = (!a2.chooseType) ? a2.value.num : atoi(a2.value.string);
+	unsigned int type;
+	if (!a2.chooseType) {
+		type = (unsigned int)a2.value.num;
+	} else {
+		char *end;
+		errno = 0;
+		long val = strtol((char *)a2.value.string, &end, 10);
+		if (errno != 0 || end == (char *)a2.value.string || val < 0 || val > INT_MAX) {
+			lo3_error("Invalid type value", (char *)a2.value.string);
+			return;
+		}
+		type = (unsigned int)val;
+	}
 
 	// duplication check
 	if (var_find(name) != -1) {
