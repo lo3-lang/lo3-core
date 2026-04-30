@@ -34,6 +34,9 @@ void var_init(void) {
 
 int var_find(const char *name) {
 
+	if (list == NULL) {
+		return -1;
+	}
 	for (int i = 0; i < list->index; i++) {
 		if (strcmp(list->array[i]->name, name) == 0) {
 			return i;
