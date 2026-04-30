@@ -43,7 +43,6 @@ int pars_file(FILE *file) {
 	char *line = NULL;
 	size_t len = 0;
 	char arg1[64] = {0}, arg2[64] = {0};
-	unsigned char buff_types[2];
 
 	int pos0 = ftell(file);
 
@@ -100,20 +99,7 @@ parsing:
 		lo3_val a1 = pars_resv(arg1);
 		lo3_val a2 = pars_resv(arg2);
 
-		// todo:
-		// delete the func pars_getToKnowType(...)
-		//
-		// ///// More Information /////
-		// this func is not used anymore, because buff_types is ether.
-		(void)pars_getToKnowType(buff_types, a1, a2);
-
-		// todo:
-		// parse that prefix away.
-		//
-		// ///// More Information: /////
-		// here the program should parse the prefix, for example: '$' away.
-		// So the Exec dont have to do that.
-		signed int returnVal = pars_dispatch(cmds, a1, a2, buff_types);
+		signed int returnVal = pars_dispatch(cmds, a1, a2);
 
 		if (returnVal != -1) {
 			free(line);
@@ -136,57 +122,6 @@ parsing:
 			lo3_error("Could not find the label, did you misspell it???", "");
 			return -1;
 		}
-	}
-	return 0;
-}
-
-int pars_getToKnowType(char buffer[2], lo3_val val1, lo3_val val2) {
-
-	/* types:
-	 * 00|xx: num
-	 * 01|xx: var
-	 * 10|xx: array
-	 * 11|xx: string
-	 *
-	 * Both sides have that syntax.
-	 */
-
-	unsigned char num[2];
-
-	lo3_types possibleType[] = {val1.type, val2.type};
-	lo3_val values[] = {val1, val2};
-
-	// todo:
-	// num[] could be deleted
-	//
-	// ///// More Information /////
-	// Deleted because num[] is an additional array, which is not needed...
-	// simply using buffer[] direct instead of num[].
-	for (int i = 0; i < 2; i++) {
-		switch (possibleType[i]) {
-
-		case '$':
-			num[i] = 0b0;
-			break;
-
-		case '%':
-			num[i] = 0b01;
-			break;
-
-		case '*':
-			num[i] = 0b10;
-			break;
-
-		case '_':
-			num[i] = 0b11;
-			break;
-
-		default:
-			lo3_error("Invalid Type of <STRING> found!", values[i].value.string);
-			return 1;
-			break;
-		}
-		buffer[i] = num[i];
 	}
 	return 0;
 }
@@ -292,19 +227,13 @@ lo3_val pars_resv(char type[64]) {
 	return result;
 }
 
-// todo:
-// char array[2] should be deleted in every exec_...
-//
-// ///// More Information /////
-// Now array is very useless and not very helping. Now lo3_val has chooseType to choose its
-// type.
-int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2, char array[2]) {
+int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2) {
 
 	if (rush) {
 
 		switch (cmd) {
 		case CNT_label:
-			exec_label(a1, a2, array);
+			exec_label(a1, a2);
 			break;
 
 		default:
@@ -318,65 +247,65 @@ int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2, char array[2]) {
 
 	case BSC_asn:
 
-		exec_asn(a1, a2, array);
+		exec_asn(a1, a2);
 		break;
 
 	case ALU_add:
 
-		exec_add(a1, a2, array);
+		exec_add(a1, a2);
 		break;
 
 	case ALU_sub:
 
-		exec_sub(a1, a2, array);
+		exec_sub(a1, a2);
 		break;
 
 	case ALU_mul:
 
-		exec_mul(a1, a2, array);
+		exec_mul(a1, a2);
 		break;
 
 	case ALU_div:
 
-		exec_div(a1, a2, array);
+		exec_div(a1, a2);
 		break;
 
 	case CNT_jmp:
 
-		exec_jmp(a1, a2, array);
+		exec_jmp(a1, a2);
 		break;
 
 	case CNT_call:
 
-		exec_call(a1, a2, array);
+		exec_call(a1, a2);
 		break;
 
 	case CNT_callS:
 
-		exec_callS(a1, a2, array);
+		exec_callS(a1, a2);
 		break;
 
 	case CNT_label:
 
-		exec_label(a1, a2, array);
+		exec_label(a1, a2);
 		break;
 
 	case CNT_new:
-		exec_new(a1, a2, array);
+		exec_new(a1, a2);
 		break;
 
 	case CNT_free:
-		exec_free(a1, a2, array);
+		exec_free(a1, a2);
 		break;
 
 	case STM_out:
 
-		exec_out(a1, a2, array);
+		exec_out(a1, a2);
 		break;
 
 	case STM_in:
 
-		exec_in(a1, a2, array);
+		exec_in(a1, a2);
 		break;
 
 	case RET_good:
@@ -387,15 +316,15 @@ int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2, char array[2]) {
 
 	case CNT_cmp:
 
-		exec_cmp(a1, a2, array);
+		exec_cmp(a1, a2);
 		break;
 
 	case CNT_small:
-		exec_small(a1, a2, array);
+		exec_small(a1, a2);
 		break;
 
 	case CNT_big:
-		exec_big(a1, a2, array);
+		exec_big(a1, a2);
 		break;
 
 	default:

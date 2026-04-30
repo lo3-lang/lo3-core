@@ -10,7 +10,7 @@
 #include <limits.h>
 #include <string.h>
 
-void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_new(lo3_val a1, lo3_val a2) {
 
 	unsigned char buf[64];
 	unsigned char *name;
@@ -54,7 +54,7 @@ void exec_new(lo3_val a1, lo3_val a2, char array[2]) {
 	var_create(name, type);
 }
 
-void exec_free(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_free(lo3_val a1, lo3_val a2) {
 
 	unsigned char buf[64];
 	unsigned char *name;
@@ -81,7 +81,7 @@ void exec_free(lo3_val a1, lo3_val a2, char array[2]) {
  * what is ok?:
  * string as name, num as name
  */
-void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_asn(lo3_val a1, lo3_val a2) {
 
 	unsigned char buf[64], *name;
 	unsigned char numNameBuf[64];
@@ -110,7 +110,7 @@ void exec_asn(lo3_val a1, lo3_val a2, char array[2]) {
 
 ///// alu /////
 
-void exec_add(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_add(lo3_val a1, lo3_val a2) {
 
 	unsigned char buf[64];
 	unsigned char *name;
@@ -138,7 +138,7 @@ void exec_add(lo3_val a1, lo3_val a2, char array[2]) {
 	var_setNum(name, var_getNum(oldVar) + a2.value.num);
 }
 
-void exec_sub(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_sub(lo3_val a1, lo3_val a2) {
 
 	unsigned char buf[64];
 	unsigned char *name;
@@ -166,7 +166,7 @@ void exec_sub(lo3_val a1, lo3_val a2, char array[2]) {
 	var_setNum(name, var_getNum(oldVar) - a2.value.num);
 }
 
-void exec_mul(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_mul(lo3_val a1, lo3_val a2) {
 
 	unsigned char buf[64];
 	unsigned char *name;
@@ -194,7 +194,7 @@ void exec_mul(lo3_val a1, lo3_val a2, char array[2]) {
 	var_setNum(name, var_getNum(oldVar) * a2.value.num);
 }
 
-void exec_div(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_div(lo3_val a1, lo3_val a2) {
 
 	unsigned char buf[64];
 	unsigned char *name;
@@ -228,7 +228,7 @@ void exec_div(lo3_val a1, lo3_val a2, char array[2]) {
 }
 
 // will cmp and jmp! #?
-void exec_jmp(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_jmp(lo3_val a1, lo3_val a2) {
 
 	char buf[64], buf2[64];
 	char *name, *name2;
@@ -262,14 +262,14 @@ void exec_jmp(lo3_val a1, lo3_val a2, char array[2]) {
 }
 
 // #c
-void exec_call(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_call(lo3_val a1, lo3_val a2) {
 }
 
 // #C - not in use - UB
-void exec_callS(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_callS(lo3_val a1, lo3_val a2) {
 }
 
-void exec_label(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_label(lo3_val a1, lo3_val a2) {
 
 	char buf[64];
 	char *name;
@@ -293,7 +293,7 @@ void exec_label(lo3_val a1, lo3_val a2, char array[2]) {
 	cf_addLabel(name, lastLineOffset);
 }
 
-void exec_out(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_out(lo3_val a1, lo3_val a2) {
 
 	unsigned char buf[64];
 	unsigned char *name;
@@ -308,7 +308,7 @@ void exec_out(lo3_val a1, lo3_val a2, char array[2]) {
 	printf("%63s\n", name);
 }
 
-void exec_in(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_in(lo3_val a1, lo3_val a2) {
 
 	unsigned char buf[64] = {0}; // privides buf not initing
 	unsigned char *res;
@@ -346,7 +346,7 @@ void exec_in(lo3_val a1, lo3_val a2, char array[2]) {
 }
 
 // compare num == num, if true -> g[0] = 1, else g[0] = 0;!!!
-void exec_cmp(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_cmp(lo3_val a1, lo3_val a2) {
 
 	if (a1.chooseType || a2.chooseType) {
 		lo3_error("You can not compare char*'s,\n"
@@ -369,7 +369,7 @@ void exec_cmp(lo3_val a1, lo3_val a2, char array[2]) {
 }
 
 // compare num < num, if true -> g[0] = 1, else g[0] = 0;!!!
-void exec_small(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_small(lo3_val a1, lo3_val a2) {
 
 	if (a1.chooseType || a2.chooseType) {
 		lo3_error("You can not compare char*'s,\n"
@@ -392,7 +392,7 @@ void exec_small(lo3_val a1, lo3_val a2, char array[2]) {
 }
 
 // compare num > num, if true -> g[0] = 1, else g[0] = 0;!!!
-void exec_big(lo3_val a1, lo3_val a2, char array[2]) {
+void exec_big(lo3_val a1, lo3_val a2) {
 
 	if (a1.chooseType || a2.chooseType) {
 		lo3_error("You can not compare char*'s,\n"

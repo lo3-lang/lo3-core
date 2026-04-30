@@ -41,23 +41,22 @@ typedef enum {
 
 ////////// parser //////////
 lo3_val pars_resv(char type[64]);
-int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2, char array[2]);
-int pars_getToKnowType(char buffer[2], lo3_val val1, lo3_val val2);
+int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2);
 
 // execute func
-void exec_new(lo3_val a1, lo3_val a2, char array[2]);
-void exec_asn(lo3_val a1, lo3_val a2, char array[2]);
-void exec_add(lo3_val a1, lo3_val a2, char array[2]);
-void exec_sub(lo3_val a1, lo3_val a2, char array[2]);
-void exec_mul(lo3_val a1, lo3_val a2, char array[2]);
-void exec_div(lo3_val a1, lo3_val a2, char array[2]);
-void exec_jmp(lo3_val a1, lo3_val a2, char array[2]);
-void exec_call(lo3_val a1, lo3_val a2, char array[2]);
-void exec_callS(lo3_val a1, lo3_val a2, char array[2]);
-void exec_label(lo3_val a1, lo3_val a2, char array[2]);
-void exec_out(lo3_val a1, lo3_val a2, char array[2]);
-void exec_in(lo3_val a1, lo3_val a2, char array[2]);
-void exec_free(lo3_val a1, lo3_val a2, char array[2]);
-void exec_cmp(lo3_val a1, lo3_val a2, char array[2]);
-void exec_small(lo3_val a1, lo3_val a2, char array[2]);
-void exec_big(lo3_val a1, lo3_val a2, char array[2]);
+void exec_new(lo3_val a1, lo3_val a2);
+void exec_asn(lo3_val a1, lo3_val a2);
+void exec_add(lo3_val a1, lo3_val a2);
+void exec_sub(lo3_val a1, lo3_val a2);
+void exec_mul(lo3_val a1, lo3_val a2);
+void exec_div(lo3_val a1, lo3_val a2);
+void exec_jmp(lo3_val a1, lo3_val a2);
+void exec_call(lo3_val a1, lo3_val a2);
+void exec_callS(lo3_val a1, lo3_val a2);
+void exec_label(lo3_val a1, lo3_val a2);
+void exec_out(lo3_val a1, lo3_val a2);
+void exec_in(lo3_val a1, lo3_val a2);
+void exec_free(lo3_val a1, lo3_val a2);
+void exec_cmp(lo3_val a1, lo3_val a2);
+void exec_small(lo3_val a1, lo3_val a2);
+void exec_big(lo3_val a1, lo3_val a2);
