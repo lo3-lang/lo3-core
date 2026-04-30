@@ -10,6 +10,8 @@
 #include "./internal/core.h"
 #include "./internal/global.h"
 #include "./internal/specific-language.h"
+#include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -200,12 +202,24 @@ lo3_val pars_resv(char type[64]) {
 
 	// find the corresponding type
 	case TYPE_num:
+	{
+		char *end;
+		errno = 0;
 
-		result.value.num = atoi(&type[1]);
+		long val = strtol(&type[1], &end, 10);
+		if (errno != 0 || end == &type[1] || val > INT_MAX || val < INT_MIN) {
+			lo3_error("<num> is typeof integer!\nBut this value is not!", type);
+			result.value.num = 0;
+			result.chooseType = 0;
+			break;
+		}
+		result.value.num = (int)val;
 		result.chooseType = 0;
 		break;
+	}
 
 	case TYPE_array:
+	{
 
 		// logic:
 		// *X, lookup X, resolve the value as long as it is a number,
@@ -214,13 +228,21 @@ lo3_val pars_resv(char type[64]) {
 		// not allowed: "*A"
 
 		// *100 -> _Hello
-		int idx = atoi(&type[1]);
-		lo3_val value = g_get(atoi(&type[1]));
+		char *end;
+		errno = 0;
+
+		long idx = strtol(&type[1], &end, 10);
+		if (errno != 0 || end == &type[1] || idx < 0 || idx > INT_MAX) {
+			lo3_error("Invalid g[] index", type);
+			break;
+		}
+		lo3_val value = g_get((int)idx);
 
 		result.type = value.chooseType ? TYPE_string : TYPE_num;
 		result.value = value.value;
 		result.chooseType = value.chooseType ? 3 : 0;
 		break;
+	}
 
 	case TYPE_string:
 
