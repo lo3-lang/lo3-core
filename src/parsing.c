@@ -32,9 +32,9 @@ int pars_isFileValid(char *name, FILE **file) {
 
 	if (len < 4 || strcmp(&name[len - 4], ".lo3") != 0) {
 		lo3_error("File must end with .lo3\n", name);
+		(void)(fclose((*file)));
 		return -1;
 	}
-
 	return 0;
 }
 
@@ -136,8 +136,7 @@ lo3_val pars_resv(char type[64]) {
 	switch (result.type) {
 
 	// find the corresponding type
-	case TYPE_num:
-	{
+	case TYPE_num: {
 		char *end;
 		errno = 0;
 
@@ -153,8 +152,7 @@ lo3_val pars_resv(char type[64]) {
 		break;
 	}
 
-	case TYPE_array:
-	{
+	case TYPE_array: {
 
 		// logic:
 		// *X, lookup X, resolve the value as long as it is a number,
