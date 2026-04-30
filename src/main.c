@@ -1,9 +1,10 @@
 // Copyright (c) 2026 seesee010
 // Read the License file for more informations about the license.
 
+#include "./internal/cf-define.h"
 #include "./internal/core.h"
 #include "internal/bare-var.h"
-#include "./internal/cf-define.h"
+#include <stdio.h>
 
 FILE *openFile = NULL;
 int main(int argc, char *argv[]) {
@@ -16,6 +17,7 @@ int main(int argc, char *argv[]) {
 	FILE *file;
 	if (pars_isFileValid(argv[1], &file)) {
 		lo3_error("Could not load the coresponding file!", argv[1]);
+		(void)(fclose(file));
 		return 1;
 	}
 
