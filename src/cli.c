@@ -243,7 +243,10 @@ int cli_run_cpp(const char *input, const char *output) {
 #ifdef _WIN32
 	char *cpp_argv[] = {"cpp", "-P", (char *)input, "-o", (char *)output, NULL};
 	int rc = (int)_spawnvp(_P_WAIT, "cpp", (const char *const *)cpp_argv);
-	return (rc == 0) ? 0 : -1;
+	if (rc != 0) {
+		return -1;
+	}
+	return 0;
 #else
 	pid_t pid = fork();
 	if (pid < 0) {
@@ -264,5 +267,8 @@ int cli_run_cpp(const char *input, const char *output) {
 
 int cli_has_upper_ext(const char *name) {
 	size_t len = strlen(name);
-	return len >= 4 && strcmp(&name[len - 4], ".LO3") == 0;
+	if (len < 4) {
+		return 0;
+	}
+	return strcmp(&name[len - 4], ".LO3") == 0;
 }
