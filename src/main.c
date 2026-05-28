@@ -6,12 +6,6 @@
 #include "internal/bare-var.h"
 #include "internal/cli.h"
 
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
-
 FILE *openFile = NULL;
 
 int main(int argc, char *argv[]) {
@@ -46,11 +40,7 @@ int main(int argc, char *argv[]) {
 			if (!tmp) {
 				lo3_error("Could not create temp file for dry-run!", dry_tmp);
 				if (dry_fd >= 0) {
-#ifdef _WIN32
-					_close(dry_fd);
-#else
-					close(dry_fd);
-#endif
+					cli_close_fd(dry_fd);
 				}
 				remove(dry_tmp);
 				return 1;
@@ -102,11 +92,7 @@ int main(int argc, char *argv[]) {
 			return 1;
 		}
 		if (cpp_fd >= 0) {
-#ifdef _WIN32
-			_close(cpp_fd);
-#else
-			close(cpp_fd);
-#endif
+			cli_close_fd(cpp_fd);
 			cpp_fd = -1;
 		}
 		if (cli_run_cpp(args.input_file, cpp_tmp) != 0) {

@@ -289,3 +289,12 @@ int cli_has_upper_ext(const char *name) {
 	}
 	return strcmp(&name[len - 4], ".LO3") == 0;
 }
+
+// Close a raw file descriptor, platform-safe.
+void cli_close_fd(int fd) {
+#ifdef _WIN32
+	_close(fd);
+#else
+	close(fd);
+#endif
+}
