@@ -19,10 +19,13 @@
 
 #define BUF_SIZE 4096
 #define VER_BUF_SIZE 64
+#define ERR_SAME_FILE "Source and destination are the same file"
+#define ERR_DST_CREATE "Output file already exists or cannot be created"
 
+// Print usage information.
 void cli_help(void) {
 
-	PRINTLI("Usage: lo3 [OPTIONS] [FILE]");
+	PRINTLI("lo3 [OPTIONS] [FILE]");
 	PRINTLI("<FILE.lo3> - Run a lo3 file");
 	PRINTLI("<FILE.LO3> - Run with C preprocessor first");
 	PRINTLI("--cpp <FILE> - Run the C preprocessor on FILE before executing");
@@ -33,6 +36,7 @@ void cli_help(void) {
 	PRINTLI("--help, -h - Show this help message");
 }
 
+// Print current build version.
 void cli_version(void) {
 
 	char ver_buf[VER_BUF_SIZE];
@@ -40,6 +44,7 @@ void cli_version(void) {
 	PRINTLI(ver_buf);
 }
 
+// Return execution mode based on parsed arguments.
 lo3_mode cli_get_mode(const lo3_args *args) {
 
 	if (args->show_help) {
@@ -57,6 +62,7 @@ lo3_mode cli_get_mode(const lo3_args *args) {
 	return MODE_NORMAL;
 }
 
+// Parse argc/argv into args. Returns 0 on success, -1 on error.
 int cli_parse(int argc, char *argv[], lo3_args *args) {
 
 	for (int i = 1; i < argc; i++) {
@@ -116,17 +122,18 @@ int cli_parse(int argc, char *argv[], lo3_args *args) {
 	return 0;
 }
 
+// Copy src to dst with exclusive creation. Returns 0 on success, -1 on error.
 int cli_copy_file(const char *src, const char *dst) {
 #ifdef _WIN32
 	if (strcmp(src, dst) == 0) {
-		lo3_error("Source and destination are the same file", dst);
+		lo3_error(ERR_SAME_FILE, dst);
 		return -1;
 	}
 #else
 	struct stat st_src, st_dst;
 	if (stat(src, &st_src) == 0 && stat(dst, &st_dst) == 0) {
 		if (st_src.st_dev == st_dst.st_dev && st_src.st_ino == st_dst.st_ino) {
-			lo3_error("Source and destination are the same file", dst);
+			lo3_error(ERR_SAME_FILE, dst);
 			return -1;
 		}
 	}
@@ -143,7 +150,7 @@ int cli_copy_file(const char *src, const char *dst) {
 	                           CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		fclose(in);
-		lo3_error("Output file already exists or cannot be created", dst);
+		lo3_error(ERR_DST_CREATE, dst);
 		return -1;
 	}
 	int ofd = _open_osfhandle((intptr_t)hFile, 0);
@@ -158,7 +165,7 @@ int cli_copy_file(const char *src, const char *dst) {
 	int ofd = open(dst, O_WRONLY | O_CREAT | O_EXCL, 0666);
 	if (ofd < 0) {
 		fclose(in);
-		lo3_error("Output file already exists or cannot be created", dst);
+		lo3_error(ERR_DST_CREATE, dst);
 		return -1;
 	}
 	FILE *out = fdopen(ofd, "wb");
@@ -194,6 +201,7 @@ int cli_copy_file(const char *src, const char *dst) {
 	return ok ? 0 : -1;
 }
 
+// Create a unique temporary .lo3 file; path written to buf, fd returned via fd_out if non-NULL.
 int cli_make_tmp(char *buf, size_t size, const char *prefix, int *fd_out) {
 #ifdef _WIN32
 	char tmp_dir[MAX_PATH];
@@ -246,6 +254,7 @@ int cli_make_tmp(char *buf, size_t size, const char *prefix, int *fd_out) {
 #endif
 }
 
+// Run the C preprocessor (cpp -P) on input, writing result to output.
 int cli_run_cpp(const char *input, const char *output) {
 #ifdef _WIN32
 	char *cpp_argv[] = {"cpp", "-P", (char *)input, "-o", (char *)output, NULL};
@@ -272,6 +281,7 @@ int cli_run_cpp(const char *input, const char *output) {
 #endif
 }
 
+// Return 1 if name ends with .LO3 (uppercase), 0 otherwise.
 int cli_has_upper_ext(const char *name) {
 	size_t len = strlen(name);
 	if (len < 4) {
