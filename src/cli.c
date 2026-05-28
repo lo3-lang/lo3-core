@@ -4,7 +4,6 @@
 #include "./internal/cli.h"
 #include "./internal/core.h"
 #include "version.h"
-#include <string.h>
 
 #ifdef _WIN32
 #include <process.h>
@@ -19,39 +18,47 @@
 #endif
 
 #define BUF_SIZE 4096
+#define VER_BUF_SIZE 64
 
 void cli_help(void) {
+
 	PRINTLI("Usage: lo3 [OPTIONS] [FILE]");
-	PRINTLI("<FILE.lo3>\: Run a lo3 file");
-	PRINTLI("<FILE.LO3>\: Run with C preprocessor first");
-	PRINTLI("--cpp <FILE>\: Run the C preprocessor on FILE before executing");
-	PRINTLI("<FILE> -o <NEWNAME>\: Copy FILE to NEWNAME and execute NEWNAME");
-	PRINTLI("<FILE> --ignore-suffix\: Execute FILE regardless of extension");
-	PRINTLI("--dry-run, -n\: Read lo3 from stdin and execute");
-	PRINTLI("--version, -v\: Show the current build version");
-	PRINTLI("--help, -h\: Show this help message");
+	PRINTLI("<FILE.lo3> - Run a lo3 file");
+	PRINTLI("<FILE.LO3> - Run with C preprocessor first");
+	PRINTLI("--cpp <FILE> - Run the C preprocessor on FILE before executing");
+	PRINTLI("<FILE> -o <NEWNAME> - Copy FILE to NEWNAME and execute NEWNAME");
+	PRINTLI("<FILE> --ignore-suffix - Execute FILE regardless of extension");
+	PRINTLI("--dry-run, -n - Read lo3 from stdin and execute");
+	PRINTLI("--version, -v - Show the current build version");
+	PRINTLI("--help, -h - Show this help message");
 }
 
 void cli_version(void) {
-	char ver_buf[64];
+
+	char ver_buf[VER_BUF_SIZE];
 	snprintf(ver_buf, sizeof(ver_buf), "lo3 version %s", LO3_VERSION);
 	PRINTLI(ver_buf);
 }
 
 lo3_mode cli_get_mode(const lo3_args *args) {
+
 	if (args->show_help) {
 		return MODE_HELP;
 	}
+
 	if (args->show_version) {
 		return MODE_VERSION;
 	}
+
 	if (args->dry_run) {
 		return MODE_DRY_RUN;
 	}
+
 	return MODE_NORMAL;
 }
 
 int cli_parse(int argc, char *argv[], lo3_args *args) {
+
 	for (int i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
 			args->show_help = 1;

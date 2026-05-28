@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int pars_isFileValid(char *name, FILE **file);
 int pars_file(FILE *file);
