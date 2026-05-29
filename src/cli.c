@@ -80,28 +80,26 @@ int cli_parse(int argc, char *argv[], lo3_args *args) {
 
 		} else if (strcmp(argv[i], "--cpp") == 0) {
 			args->use_cpp = 1;
-			if (i + 1 < argc) {
-				if (args->input_file) {
-					lo3_error("Multiple input files are not supported", argv[i + 1]);
-					return -1;
-				}
-				args->input_file = argv[++i];
-			} else {
+			if (i + 1 >= argc) {
 				lo3_error("--cpp requires a filename", "");
 				return -1;
 			}
+			if (args->input_file) {
+				lo3_error("Multiple input files are not supported", argv[i + 1]);
+				return -1;
+			}
+			args->input_file = argv[++i];
 
 		} else if (strcmp(argv[i], "-o") == 0) {
-			if (i + 1 < argc) {
-				if (args->output_file) {
-					lo3_error("Multiple output files are not supported", argv[i + 1]);
-					return -1;
-				}
-				args->output_file = argv[++i];
-			} else {
+			if (i + 1 >= argc) {
 				lo3_error("-o requires a new filename", "");
 				return -1;
 			}
+			if (args->output_file) {
+				lo3_error("Multiple output files are not supported", argv[i + 1]);
+				return -1;
+			}
+			args->output_file = argv[++i];
 
 		} else if (argv[i][0] != '-') {
 			if (args->input_file) {

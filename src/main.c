@@ -39,9 +39,7 @@ int main(int argc, char *argv[]) {
 			FILE *tmp = fdopen(dry_fd, "w");
 			if (!tmp) {
 				lo3_error("Could not create temp file for dry-run!", dry_tmp);
-				if (dry_fd >= 0) {
-					cli_close_fd(dry_fd);
-				}
+				cli_close_fd(dry_fd);
 				remove(dry_tmp);
 				return 1;
 			}
