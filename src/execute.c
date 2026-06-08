@@ -435,7 +435,7 @@ inline void exec_sys(lo3_val a1, lo3_val a2) {
 		lo3_error("You are not allowed to call any syscall using char* (strings)...", "");
 		return;
 	}
-	long ret = syscall(a1.value.intVal, g_get(0), g_get(1), g_get(2));
+	long ret = syscall(a1.value.num, g_get(0), g_get(1), g_get(2));
     
     	if (ret == -1) {
         	lo3_error("Syscall failed", "");
