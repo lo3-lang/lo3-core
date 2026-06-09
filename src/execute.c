@@ -477,9 +477,9 @@ inline void exec_sys(lo3_val a1, lo3_val a2)
 	long arg0, arg1, arg2;
 
 	// combine (long) buf = (int) a + (int) b;
-	arg0 = ((long)g_getNum(2)) << 32 | (unsigned int)g_getNum(1);
-	arg1 = ((long)g_getNum(4)) << 32 | (unsigned int)g_getNum(3);
-	arg2 = ((long)g_getNum(6)) << 32 | (unsigned int)g_getNum(5);
+	arg0 = ((long)g_getNum(1)) << 32 | (unsigned int)g_getNum(0);
+	arg1 = ((long)g_getNum(3)) << 32 | (unsigned int)g_getNum(2);
+	arg2 = ((long)g_getNum(5)) << 32 | (unsigned int)g_getNum(4);
 
 	int ret = syscall((unsigned int)a1.value.num, arg0, arg1, arg2);
 
