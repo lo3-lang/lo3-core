@@ -50,7 +50,7 @@ typedef struct {
 
 // sleep(ms) macro
 #ifdef _WIN32
-#inlcude < windows.h>
+#include <windows.h>
 #define ASLEEP(ms) Sleep(ms);
 
 #else // linux

@@ -9,19 +9,24 @@
 #include <errno.h>
 #include <limits.h>
 #include <string.h>
+#ifdef __linux__
+	#include <sys/syscall.h>
+	#include <unistd.h>
+#endif
 
-void exec_new(lo3_val a1, lo3_val a2) {
+void exec_new(lo3_val a1, lo3_val a2)
+{
 
 	unsigned char buf[64];
 	unsigned char *name;
 
 	if (!a1.chooseType) {
 
-		snprintf(buf, sizeof(buf), "%d", a1.value.num);
-		lo3_warn("Are you sure you want to set the name as a number?", buf);
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		lo3_warn("Are you sure you want to set the name as a number?",
+			buf);
 		name = buf;
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
@@ -29,13 +34,14 @@ void exec_new(lo3_val a1, lo3_val a2) {
 	unsigned int type;
 	if (!a2.chooseType) {
 		type = (unsigned int)a2.value.num;
-	}
-	else {
+	} else {
 		char *end;
 		errno = 0;
 		long val = strtol((char *)a2.value.string, &end, 10);
-		if (errno != 0 || end == (char *)a2.value.string || val < 0 || val > INT_MAX) {
-			lo3_error("Invalid type value", (char *)a2.value.string);
+		if (errno != 0 || end == (char *)a2.value.string || val < 0 ||
+			val > INT_MAX) {
+			lo3_error(
+				"Invalid type value", (char *)a2.value.string);
 			return;
 		}
 		type = (unsigned int)val;
@@ -49,25 +55,26 @@ void exec_new(lo3_val a1, lo3_val a2) {
 
 	if (type != 0 && type != 3) {
 
-		snprintf(buf, sizeof(buf), "%d", type);
+		(void)snprintf(buf, sizeof(buf), "%d", type);
 		lo3_warn("Variable type might not be num or string!", buf);
 	}
 
 	var_create(name, type);
 }
 
-void exec_free(lo3_val a1, lo3_val a2) {
+void exec_free(lo3_val a1, lo3_val a2)
+{
 
 	unsigned char buf[64];
 	unsigned char *name;
 
 	if (!a1.chooseType) {
-		snprintf(buf, sizeof(buf), "%d", a1.value.num);
-		lo3_warn("Are you sure you want to delete some var called:\nDoing it anyways... ",
-		         buf);
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		lo3_warn("Are you sure you want to delete some var "
+			 "called:\nDoing it anyways... ",
+			buf);
 		name = buf;
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
@@ -84,57 +91,62 @@ void exec_free(lo3_val a1, lo3_val a2) {
  * what is ok?:
  * string as name, num as name
  */
-void exec_asn(lo3_val a1, lo3_val a2) {
+void exec_asn(lo3_val a1, lo3_val a2)
+{
 
 	unsigned char buf[64], *name;
 	unsigned char numNameBuf[64];
 
 	if (!a1.chooseType) {
-		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
 		name = buf;
 
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
-	// var_get() would also work here, but it is just a wrapper around var_find()
+	// var_get() would also work here, but it is just a wrapper around
+	// var_find()
 	if (var_find(name) == -1) {
-		lo3_error("Could not find <var> please check if it really exists!", "");
+		lo3_error("Could not find <var> please check if it really "
+			  "exists!",
+			"");
 		return;
 	}
 
 	// set
 	if (!a2.chooseType) {
 		var_setNum(name, a2.value.num);
-	}
-	else {
+	} else {
 		var_setString(name, a2.value.string);
 	}
 }
 
 ///// alu /////
 
-void exec_add(lo3_val a1, lo3_val a2) {
+void exec_add(lo3_val a1, lo3_val a2)
+{
 
 	unsigned char buf[64];
 	unsigned char *name;
 
 	if (!a1.chooseType) {
-		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
 		name = buf;
 
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
 	if (var_find(name) == -1) {
-		lo3_error("Could not find this var, please check if you got something wrong", name);
+		lo3_error("Could not find this var, please check if you got "
+			  "something wrong",
+			name);
 		return;
 	}
 
-	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
+	lo3_var *oldVar = var_get(name); // it must be right now, else
+					 // var_find() was wrong before!
 
 	if (a2.chooseType) {
 		lo3_error("Arg1 requires TYPE String for +=", "");
@@ -144,26 +156,29 @@ void exec_add(lo3_val a1, lo3_val a2) {
 	var_setNum(name, var_getNum(oldVar) + a2.value.num);
 }
 
-void exec_sub(lo3_val a1, lo3_val a2) {
+void exec_sub(lo3_val a1, lo3_val a2)
+{
 
 	unsigned char buf[64];
 	unsigned char *name;
 
 	if (!a1.chooseType) {
-		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
 		name = buf;
 
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
 	if (var_find(name) == -1) {
-		lo3_error("Could not find this var, please check if you got something wrong", name);
+		lo3_error("Could not find this var, please check if you got "
+			  "something wrong",
+			name);
 		return;
 	}
 
-	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
+	lo3_var *oldVar = var_get(name); // it must be right now, else
+					 // var_find() was wrong before!
 
 	if (a2.chooseType) {
 		lo3_error("Arg1 requires TYPE String for -=", "");
@@ -173,26 +188,29 @@ void exec_sub(lo3_val a1, lo3_val a2) {
 	var_setNum(name, var_getNum(oldVar) - a2.value.num);
 }
 
-void exec_mul(lo3_val a1, lo3_val a2) {
+void exec_mul(lo3_val a1, lo3_val a2)
+{
 
 	unsigned char buf[64];
 	unsigned char *name;
 
 	if (!a1.chooseType) {
-		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
 		name = buf;
 
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
 	if (var_find(name) == -1) {
-		lo3_error("Could not find this var, please check if you got something wrong", name);
+		lo3_error("Could not find this var, please check if you got "
+			  "something wrong",
+			name);
 		return;
 	}
 
-	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
+	lo3_var *oldVar = var_get(name); // it must be right now, else
+					 // var_find() was wrong before!
 
 	if (a2.chooseType) {
 		lo3_error("Arg1 requires TYPE String for *=", "");
@@ -202,26 +220,29 @@ void exec_mul(lo3_val a1, lo3_val a2) {
 	var_setNum(name, var_getNum(oldVar) * a2.value.num);
 }
 
-void exec_div(lo3_val a1, lo3_val a2) {
+void exec_div(lo3_val a1, lo3_val a2)
+{
 
 	unsigned char buf[64];
 	unsigned char *name;
 
 	if (!a1.chooseType) {
-		snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
 		name = buf;
 
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
 	if (var_find(name) == -1) {
-		lo3_error("Could not find this var, please check if you got something wrong", name);
+		lo3_error("Could not find this var, please check if you got "
+			  "something wrong",
+			name);
 		return;
 	}
 
-	lo3_var *oldVar = var_get(name); // it must be right now, else var_find() was wrong before!
+	lo3_var *oldVar = var_get(name); // it must be right now, else
+					 // var_find() was wrong before!
 
 	if (a2.chooseType) {
 		lo3_error("Arg1 requires TYPE String for /=", "");
@@ -237,7 +258,8 @@ void exec_div(lo3_val a1, lo3_val a2) {
 }
 
 // will cmp and jmp! #?
-void exec_jmp(lo3_val a1, lo3_val a2) {
+void exec_jmp(lo3_val a1, lo3_val a2)
+{
 
 	char buf[64], buf2[64];
 	char *name, *name2;
@@ -246,8 +268,7 @@ void exec_jmp(lo3_val a1, lo3_val a2) {
 	if (!a1.chooseType) {
 		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
 		name = buf;
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
@@ -257,8 +278,9 @@ void exec_jmp(lo3_val a1, lo3_val a2) {
 
 	// g[0] == name2
 	if (a2.chooseType != 0) {
-		lo3_error("Illegal type, here arg1 must be an integer value to compare against!",
-		          "");
+		lo3_error("Illegal type, here arg1 must be an integer value to "
+			  "compare against!",
+			"");
 		return;
 	}
 
@@ -272,14 +294,13 @@ void exec_jmp(lo3_val a1, lo3_val a2) {
 }
 
 // #c
-void exec_call(lo3_val a1, lo3_val a2) {
-}
+void exec_call(lo3_val a1, lo3_val a2) {}
 
 // #C - not in use - UB
-void exec_callS(lo3_val a1, lo3_val a2) {
-}
+void exec_callS(lo3_val a1, lo3_val a2) {}
 
-void exec_label(lo3_val a1, lo3_val a2) {
+void exec_label(lo3_val a1, lo3_val a2)
+{
 
 	char buf[64];
 	char *name;
@@ -287,8 +308,7 @@ void exec_label(lo3_val a1, lo3_val a2) {
 	if (!a1.chooseType) {
 		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
 		name = buf;
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
@@ -304,7 +324,8 @@ void exec_label(lo3_val a1, lo3_val a2) {
 	cf_addLabel(name, lastLineOffset);
 }
 
-void exec_out(lo3_val a1, lo3_val a2) {
+void exec_out(lo3_val a1, lo3_val a2)
+{
 
 	unsigned char buf[64];
 	unsigned char *name;
@@ -312,15 +333,15 @@ void exec_out(lo3_val a1, lo3_val a2) {
 	if (!a1.chooseType) {
 		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
 		name = buf;
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
-	printf("%63s\n", name);
+	(void)printf("%63s\n", name);
 }
 
-void exec_in(lo3_val a1, lo3_val a2) {
+void exec_in(lo3_val a1, lo3_val a2)
+{
 
 	unsigned char buf[64] = {0}; // privides buf not initing
 	unsigned char *res;
@@ -331,9 +352,10 @@ void exec_in(lo3_val a1, lo3_val a2) {
 	res = fgets(buf, sizeof(buf), stdin);
 
 	if (res == NULL) {
-		lo3_error("Something went wrong while reading the stdin stream.\n"
-		          "Please check if you done anything wrong...",
-		          buf);
+		lo3_error(
+			"Something went wrong while reading the stdin stream.\n"
+			"Please check if you done anything wrong...",
+			buf);
 		return;
 	}
 
@@ -344,27 +366,28 @@ void exec_in(lo3_val a1, lo3_val a2) {
 
 	// correct the a1.~type
 	if (!a1.chooseType) {
-		snprintf(numNameBuf, sizeof(numNameBuf), "%d", a1.value.num);
+		(void)snprintf(numNameBuf, sizeof(numNameBuf), "%d", a1.value.num);
 		name = numNameBuf;
-	}
-	else {
+	} else {
 		name = a1.value.string;
 	}
 
 	if (!a2.chooseType) {
 		var_setNum(name, temp.value.num);
-	}
-	else {
+	} else {
 		var_setString(name, temp.value.string);
 	}
 }
 
 // compare num == num, if true -> g[0] = 1, else g[0] = 0;!!!
-void exec_cmp(lo3_val a1, lo3_val a2) {
+void exec_cmp(lo3_val a1, lo3_val a2)
+{
 
 	if (a1.chooseType || a2.chooseType) {
 		lo3_error("You can not compare char*'s,\n"
-			"Please use the coresponding std-func!, from {string.c}", "");
+			  "Please use the coresponding std-func!, from "
+			  "{string.c}",
+			"");
 		return;
 	}
 
@@ -383,11 +406,14 @@ void exec_cmp(lo3_val a1, lo3_val a2) {
 }
 
 // compare num < num, if true -> g[0] = 1, else g[0] = 0;!!!
-void exec_small(lo3_val a1, lo3_val a2) {
+void exec_small(lo3_val a1, lo3_val a2)
+{
 
 	if (a1.chooseType || a2.chooseType) {
 		lo3_error("You can not compare char*'s,\n"
-			"Please use the coresponding std-func!, from {string.c}", "");
+			  "Please use the coresponding std-func!, from "
+			  "{string.c}",
+			"");
 		return;
 	}
 
@@ -406,11 +432,14 @@ void exec_small(lo3_val a1, lo3_val a2) {
 }
 
 // compare num > num, if true -> g[0] = 1, else g[0] = 0;!!!
-void exec_big(lo3_val a1, lo3_val a2) {
+void exec_big(lo3_val a1, lo3_val a2)
+{
 
 	if (a1.chooseType || a2.chooseType) {
 		lo3_error("You can not compare char*'s,\n"
-			"Please use the coresponding std-func!, from {string.c}", "");
+			  "Please use the coresponding std-func!, from "
+			  "{string.c}",
+			"");
 		return;
 	}
 
@@ -429,15 +458,24 @@ void exec_big(lo3_val a1, lo3_val a2) {
 }
 
 // call syscalls
-inline void exec_sys(lo3_val a1, lo3_val a2) {
-	
+inline void exec_sys(lo3_val a1, lo3_val a2)
+{
+
+#ifdef __linux__
 	if (a1.chooseType == 3) {
-		lo3_error("You are not allowed to call any syscall using char* (strings)...", "");
+		lo3_error("You are not allowed to call any syscall using char* "
+			  "(strings)...",
+			"");
 		return;
 	}
-	long ret = syscall(a1.value.num, g_get(0), g_get(1), g_get(2));
-    
-    	if (ret == -1) {
-        	lo3_error("Syscall failed", "");
-    	}
+	long ret = syscall(a1.value.num, g_getNum(0), g_getNum(1), g_getNum(2));
+
+	if (ret == -1) {
+		lo3_error("Syscall failed", "");
+	}
+#else
+	(void)a1;
+	(void)a2;
+	lo3_error("Syscalls are not supported on this platform", "");
+#endif
 }
