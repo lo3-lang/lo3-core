@@ -493,7 +493,7 @@ inline void exec_sys(lo3_val a1, lo3_val a2)
 	retVal.chooseType = 0;
 	retVal.value.num = ret;
 
-	g_set(0, retVal)
+	g_set(0, retVal);
 #else
 	(void)a1;
 	(void)a2;
