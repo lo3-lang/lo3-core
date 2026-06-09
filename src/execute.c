@@ -458,6 +458,11 @@ void exec_big(lo3_val a1, lo3_val a2)
 }
 
 // call syscalls
+// g[0] <- syscall num
+// g[1] <- arg0 lower half
+// g[2] <- arg0 upper half
+// g[3] <- arg1 lower half
+// g[4] <- arg1 upper half
 inline void exec_sys(lo3_val a1, lo3_val a2)
 {
 
@@ -468,7 +473,15 @@ inline void exec_sys(lo3_val a1, lo3_val a2)
 			"");
 		return;
 	}
-	long ret = syscall(a1.value.num, g_getNum(0), g_getNum(1), g_getNum(2));
+
+	long arg0, arg1, arg2;
+	
+	// combine (long) buf = (int) a + (int) b;
+	arg0 = ((long)g_getNum(2)) << 32 | (unsigned int)g_getNum(1);
+	arg1 = ((long)g_getNum(5)) << 32 | (unsigned int)g_getNum(3);
+	arg2 = ((long)g_getNum(7)) << 32 | (unsigned int)g_getNum(6);
+
+	int ret = syscall((unsigned int)a1.value.num, arg0, arg1, arg2);
 
 	if (ret == -1) {
 		lo3_error("Syscall failed", "");
