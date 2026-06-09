@@ -478,8 +478,8 @@ inline void exec_sys(lo3_val a1, lo3_val a2)
 
 	// combine (long) buf = (int) a + (int) b;
 	arg0 = ((long)g_getNum(2)) << 32 | (unsigned int)g_getNum(1);
-	arg1 = ((long)g_getNum(5)) << 32 | (unsigned int)g_getNum(3);
-	arg2 = ((long)g_getNum(7)) << 32 | (unsigned int)g_getNum(6);
+	arg1 = ((long)g_getNum(4)) << 32 | (unsigned int)g_getNum(3);
+	arg2 = ((long)g_getNum(6)) << 32 | (unsigned int)g_getNum(5);
 
 	int ret = syscall((unsigned int)a1.value.num, arg0, arg1, arg2);
 
@@ -487,7 +487,13 @@ inline void exec_sys(lo3_val a1, lo3_val a2)
 		lo3_error("Syscall failed", "");
 	}
 
-	g_set(0, ret);
+	// tmp
+	lo3_val retVal;
+	retVal.type = TYPE_num;
+	retVal.chooseType = 0;
+	retVal.value.num = ret;
+
+	g_set(0, retVal)
 #else
 	(void)a1;
 	(void)a2;
