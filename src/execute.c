@@ -304,7 +304,10 @@ void exec_out(lo3_val a1, lo3_val a2) {
 	} else {
 		name = a1.value.string;
 	}
-
+	// 0xRobert: NOTE: I'm not sure if this was intentional or a bug, but '%63s' pads 
+    // shorter strings with a lot of leading spaces on the screen. 
+    // To fix this and print strings normally, uncomment the line below:
+    //printf("%s\n", name);
 	printf("%63s\n", name);
 }
 

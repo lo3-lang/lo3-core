@@ -56,7 +56,7 @@ parsing:
 	while (lastLineOffset = ftell(file), GETLINE(&line, &len, file)) {
 
 		currentLine++;
-		line[strcspn(line, "\n")] = '\0';
+		line[strcspn(line, "\r\n")] = '\0'; // 0xRobert: Changed for include Carriage Return (\r)
 
 		// syntax sugar
 		if (line[0] == '@') {
@@ -92,7 +92,22 @@ parsing:
 		// Both are not that great.
 		// maybe there could be a check or lo3_warn() about wrong var name size.
 
-		(void)sscanf(&line[3], " %63s %63s", arg1, arg2);
+		// 0xRobert: Clean buffers.
+		memset(arg1, 0, sizeof(arg1));
+		memset(arg2, 0, sizeof(arg2));
+
+		// 0xRobert: Skip blank initial spaces after command
+		char *p1 = &line[3];
+		while (*p1 == ' ' || *p1 == '\t') p1++;
+
+		// 0xRobert: If it is a STM_out and starts with '_':
+		if (cmds == STM_out && *p1 == '_') {
+			strncpy(arg1, p1, sizeof(arg1) - 1);
+			arg1[sizeof(arg1) - 1] = '\0';
+			arg2[0] = '\0'; // Secound ARG keeps empty
+		} else {
+			(void)sscanf(&line[3], " %63s %63s", arg1, arg2);
+		}
 
 		lo3_val a1 = pars_resv(arg1);
 		lo3_val a2 = pars_resv(arg2);
@@ -133,6 +148,12 @@ lo3_val pars_resv(char type[64]) {
 	lo3_var *var;
 
 	switch (result.type) {
+	
+	// 0xRobert: Treats the empty args in a safe way
+	case '\0':
+		result.chooseType = 0;
+		result.value.num = 0;
+		break;
 
 	// find the corresponding type
 	case TYPE_num:
