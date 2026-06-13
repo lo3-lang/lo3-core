@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <string.h>
+
 #ifdef __linux__
 	#include <sys/syscall.h>
 	#include <unistd.h>
@@ -490,13 +491,16 @@ inline void exec_sys(lo3_val a1, lo3_val a2)
 	}
 
 	// splitt ret -> 2 
-	int buf[2];
-	buf[0] = (unsigned int) (a >> 32);
-	buf[1] = (unsigned int) (a & 0xFFFFFFFF);
+	lo3_val low, high;
 
-	// using: LOW_32bit_FULL
-	g_set(0, buf[0]);
-	g_set(1, buf[1]);
+	low.chooseType  = 0;
+	low.value.num   = (int)(ret & LOW_32bit_FULL);
+	
+	high.chooseType = 0;
+	high.value.num  = (int)((unsigned long)ret >> 32);
+
+	g_set(0, low);   // lower half
+	g_set(1, high);  // upper half
 #else
 	(void)a1;
 	(void)a2;
