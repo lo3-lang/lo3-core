@@ -21,7 +21,7 @@ lo3_val g_get(int index) {
 
 	if (index > G_SIZE - 1 || index < 0) {
 		lo3_error("Could not return any g[index],\n"
-		          "This is Out of bounce!",
+		          "This is Out of bounds!",
 		          buf);
 		return g.value[0];
 	}
@@ -102,7 +102,7 @@ int g_setType(int index, lo3_val type) {
 
 	if (index > G_SIZE - 1 || index < 0) {
 		buf.chooseType = -1;
-		lo3_error("setting Type: Wrong Index, you input any out of bounce!", "");
+		lo3_error("setting Type: Wrong Index, you input an out of bounds value!", "");
 		return -1;
 	}
 
