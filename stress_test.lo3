@@ -1,7 +1,7 @@
 @. #
 
 // Test 1: Multiple spaces inside string and keeping the second argument variable intact
-#n _a $100
+#n _a $3
 #o "The current system configuration status is:" _a
 
 // Test 2: Standard message with spaces and special punctuation
