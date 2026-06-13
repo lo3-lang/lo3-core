@@ -67,32 +67,290 @@ else { }
 
 ---
 
-## Blank Lines and Code Grouping
+# Spacing and Grouping
 
-Put a blank line **before and after** every `if`, loop, or similar control-flow block.
-There are exceptions:
-
-- Short sequential assignments can be grouped without blank lines:
-
-```c
-b = 10;
-a = 10;  /* ok — not much code, no need to separate */
-```
-
-- Related assignments followed by related ifs can be grouped together:
-
-```c
-b = 10;
-a = 10;
-
-if (a) { }
-if (b) { }
-```
-
-- Empty `{ }` blocks do not need surrounding blank lines (though exceptions exist).
+This document defines how blank lines are used to structure code in this project.
+It extends the "Blank Lines and Code Grouping" section of the coding guidelines.
 
 ---
 
+## Core Principle
+
+A blank line marks a **semantic block change**.
+
+Code that belongs to one thought — one "this does that" — stays together as a block.
+As soon as the topic changes, even slightly, a blank line separates the blocks.
+
+A second force works against pure grouping: **density**.
+Code that looks too dense ("blobby") gets a blank line even when the topic has not changed.
+When grouping and density conflict, avoid blobbiness.
+
+Comments count as blocks too. A comment block is separated from unrelated code
+like any other block.
+
+---
+
+## The ~2-Line Rule
+
+Two blocks may be written together (no blank line between them) when the combined
+code stays within **~2 lines**.
+
+A "line" here is a unit of meaning — one "this does that".
+An entire `if` block counts as **1**.
+
+```c
+*file = fopen(name, "r");
+
+if (*file == NULL) {
+	return -1;
+}
+```
+
+Gray zone: a single short line may stand directly next to a short `if` block.
+Both versions are acceptable — the separated one usually looks better.
+
+---
+
+## File Level
+
+- The copyright / header comment block and the includes are two blocks that say
+  completely different things → blank line between them.
+- Blank line after the includes end.
+- Critical globals (e.g. `volatile`) form their own block, separated from normal globals.
+- Short related globals are grouped together:
+
+```c
+int currentLine = 0;
+int lastLineOffset = 0;
+```
+
+- Exactly **one** blank line between functions.
+
+---
+
+## Function Header and Body
+
+A blank line separates the function signature from the body — otherwise the header
+blurs into the code:
+
+```c
+int pars_file(FILE *file) {
+
+	char *line = NULL;
+	...
+```
+
+Exception: a function whose whole body is **~2 lines or less** may start directly,
+without the blank line.
+
+Declarations at the top that serve one feature are grouped as a single block.
+Writing them directly against the function header would make the header too blobby.
+The blank line after them separates "creating the variables" from "doing the work".
+
+A larger declaration area may be split into subgroups to loosen it up:
+
+```c
+	lo3_val result;
+	result.type = type[0];
+	char *end;
+
+	int value;
+	lo3_var *var;
+```
+
+---
+
+## `if` Blocks
+
+### Before an `if`
+
+An `if` is separated from the code above it by a blank line.
+A dense `if` (long condition) must **never** have a code line directly above it —
+that only makes it denser.
+
+### `if` next to `if`
+
+Two `if` blocks stacked directly without a blank line are **always wrong**:
+
+```c
+if (a) {
+}
+if (b) {
+}
+```
+
+There is always a blank line between `if {}` and `if {}`.
+
+### After the closing `}`
+
+A single short line (e.g. `return 0;`) may follow the closing brace directly —
+as long as it is **not another `if`**, **not a `switch`**, and not too long:
+
+```c
+	if (len < 4 || strcmp(&name[len - 4], ".lo3") != 0) {
+
+		lo3_error("File must end with .lo3\n", name);
+		(void)(fclose((*file)));
+		return -1;
+	}
+	return 0;
+}
+```
+
+### Long conditions
+
+From roughly **~25 characters** between the outer `(` and `)` — only the outer
+parentheses count — the condition is blobby. A blank line follows the opening `{`,
+even when the body would be short:
+
+```c
+	if (errno != 0 || end == &type[1] || idx < 0 || idx > INT_MAX) {
+
+		lo3_error("Invalid g[] index", type);
+		break;
+	}
+```
+
+Short conditions get no inner blank line:
+
+```c
+	if (*fp == NULL) {
+		lo3_error("Could not open file", name);
+		return -1;
+	}
+```
+
+### Heavy blocks
+
+When the content of an `if` is visually heavy (e.g. a multi-line string in a call),
+a blank line follows the whole block — otherwise the `if` looks even thicker.
+
+---
+
+## `else` / `else if`
+
+`else` and `else if` go on the **next line** after the closing `}` — always.
+No blank line in between, just the new line. If this was not done somewhere,
+it is against the coding guidelines.
+
+```c
+	if (line[1] == '.') {
+		ctx->startChar = line[2];
+	}
+	else if (line[1] == '{') {
+
+		g_fasterInit(line);
+	}
+```
+
+Inside an `else if` that starts after comments or feels loaded,
+a blank line may loosen it up (as above).
+
+### Chain limit
+
+At most **3** `if` / `else if` in a chain. Beyond that, always use a `switch`.
+
+---
+
+## Loops
+
+Same logic as `if`: a long loop header gets a blank line after the opening `{` —
+the header together with the first lines would look too blobby:
+
+```c
+	while (lastLineOffset = ftell(file), GETLINE(&line, &len, file)) {
+
+		currentLine++;
+		line[strcspn(line, "\n")] = '\0';
+```
+
+---
+
+## Labels
+
+A `goto` label gets a blank line before it — it separates better:
+
+```c
+	int pos0 = ftell(file);
+
+parsing:
+	while (...) {
+```
+
+---
+
+## `switch` / `case`
+
+A blank line separates the `switch` from the declarations above it
+(definitions end, switch begins).
+
+### One-line cases
+
+No blank line after the label:
+
+```c
+	case CNT_new:
+		exec_new(a1, a2);
+		break;
+```
+
+### Cases with more content
+
+Blank line after the label:
+
+```c
+	case TYPE_string:
+
+		result.value.string = &type[1];
+		result.chooseType = 3;
+		break;
+```
+
+A comment block counts as content — a case starting with comments
+gets the blank line after the label too.
+
+Cases are separated from each other by a blank line
+(after `break;` / `return`, before the next `case`).
+
+### `break` after a block
+
+Inside a case, a blank line before `break;` after a multi-line block
+can be omitted — but it looks better with it:
+
+```c
+		lo3_error("<num> is typeof integer!\nBut this value is not!", type);
+		result.value.num = 0;
+		result.chooseType = 0;
+
+		break;
+```
+
+### After the `switch`
+
+The `return` after a switch's closing `}` gets a blank line —
+the return has nothing to do with `default`.
+(This is different from `if`, where a single `return` follows the `}` directly.)
+
+```c
+	default:
+		lo3_error("Unknown command!", "");
+		break;
+	}
+
+	return -1;
+```
+
+---
+
+## Gray Zones
+
+This layer is partly taste. Some spots are "just barely ok" both ways —
+e.g. three short assignments followed directly by `break;`.
+
+When unsure, ask one question: **does it look blobby?**
+If yes, add a blank line. Prefer air over density.
+
+# condinue of the coding guidlines: main
 ## Nesting
 
 - Maximum nesting depth: **4 levels**.

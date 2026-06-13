@@ -136,12 +136,15 @@ parsing:
 		}
 
 		if (strlen(line) < 3) {
-			lo3_warn("You used some kind of magic line...", "");
-			free(line);
-			line = NULL;
-			len = 0;
-			continue;
-		}
+		lo3_warn("You used some kind of magic line,"
+		         "which is propaply not lo3-core syntax, are you sure you wanna do "
+		         "this???",
+		         "");
+		free(line);
+		line = NULL;
+		len = 0;
+		continue;
+    }
 
 		lo3_cmds cmds = (lo3_cmds)line[1];
 
@@ -281,11 +284,11 @@ lo3_val pars_resv(char type[64]) {
 		break;
 	default:
 
-		lo3_error("Could not fild the corresponding type! …\n Please enter "
-				  "something valid,"
-				  "You may want to visit "
-				  "https://github.com/lo3-lang/learn-the-syntax !!!",
-				  type);
+		lo3_error("Could not find the corresponding type! …\n Please enter "
+		          "something valid,"
+		          "You may want to visit "
+		          "https://github.com/lo3-lang/learn-the-syntax !!!",
+		          type);
 		break;
 	}
 	return result;

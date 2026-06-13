@@ -16,8 +16,8 @@ int main(int argc, char *argv[]) {
 
 	FILE *file;
 	if (pars_isFileValid(argv[1], &file)) {
-		lo3_error("Could not load the coresponding file!", argv[1]);
-		(void)(fclose(file));
+		lo3_error("Could not load the corresponding file!", argv[1]);
+		
 		return 1;
 	}
 
