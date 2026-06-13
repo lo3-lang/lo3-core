@@ -78,7 +78,7 @@ parsing:
 
 		if (strlen(line) < 3) {
 			lo3_warn("You used some kind of magic line,"
-			         "which is propaply not lo3-core syntax, are you sure you wanna do "
+			         "which is probably not lo3-core syntax, are you sure you wanna do "
 			         "this???",
 			         "");
 			continue;
@@ -210,7 +210,7 @@ lo3_val pars_resv(char type[64]) {
 		break;
 	default:
 
-		lo3_error("Could not fild the corresponding type! …\n Please enter "
+		lo3_error("Could not find the corresponding type! …\n Please enter "
 		          "something valid,"
 		          "You may want to visit "
 		          "https://github.com/lo3-lang/learn-the-syntax !!!",
