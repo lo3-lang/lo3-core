@@ -4,6 +4,11 @@
 #include "./internal/specific-language.h"
 #include <string.h>
 
+#ifdef __linux__
+	#include <unistd.h>
+	#include <sys/syscall.h>
+#endif
+
 lo3_label cf;
 char rush = FALSE;
 char isWarped = FALSE;
@@ -71,7 +76,7 @@ int cf_jumpToLabel(const char *name) {
 	return 0;
 }
 
-inline char *cf_buildPiece(char *buf, char line[BUF_SIZE], int index) {
+static inline char *cf_buildPiece(char *buf, char line[BUF_SIZE], int index) {
 	
 	int max = 0; // if err, it will not break;
 	for (int i = index; i < BUF_SIZE; i++) {
