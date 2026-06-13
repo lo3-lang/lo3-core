@@ -248,7 +248,7 @@ lo3_val pars_resv(char type[64]) {
 		break;
 
 	case TYPE_string:
-		result.value.string = &type[1];
+		result.value.string = strdup(&type[1]);
 		result.chooseType = 3;
 		break;
 
