@@ -466,7 +466,7 @@ void exec_big(lo3_val a1, lo3_val a2)
 // g[2] <- arg0 upper half
 // g[3] <- arg1 lower half
 // g[4] <- arg1 upper half
-inline void exec_sys(lo3_val a1, lo3_val a2)
+void exec_sys(lo3_val a1, lo3_val a2)
 {
 
 #ifdef __linux__
