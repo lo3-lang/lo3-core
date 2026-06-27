@@ -16,6 +16,13 @@ jobs:
           cmake -B build
           cmake --build build
 
+      - name: Upload binary
+        if: steps.build.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lo3-binary
+          path: bin/lo3
+
       - name: Report compilation status
         if: always()
         run: |
@@ -24,5 +31,54 @@ jobs:
             echo "The source code compiled successfully." >> $GITHUB_STEP_SUMMARY
           else
             echo "## ❌ Compilation failed" >> $GITHUB_STEP_SUMMARY
-            echo "The source code **failed to compile**. This does not block merging, but the code should be fixed before release." >> $GITHUB_STEP_SUMMARY
+            echo "The source code **failed to compile**. Tests will not run." >> $GITHUB_STEP_SUMMARY
+          fi
+
+  test:
+    needs: compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download binary
+        uses: actions/download-artifact@v4
+        with:
+          name: lo3-binary
+          path: bin/
+
+      - name: Make executable
+        run: chmod +x bin/lo3
+
+      - name: Generate aggregate file
+        run: |
+          shopt -s nullglob
+          SYNTAX_DIR="tests/syntax"
+          AGGREGATE="tests/general.lo3"
+          AGG_DIR="$(dirname "$AGGREGATE")"
+          {
+            echo "@.%"
+            for f in "$SYNTAX_DIR"/*.lo3; do
+              rel="$(realpath --relative-to="$AGG_DIR" "$f")"
+              echo "#include \"$rel\""
+            done
+          } > "$AGGREGATE"
+          echo "::group::Generated aggregate ($AGGREGATE)"
+          cat "$AGGREGATE"
+          echo "::endgroup::"
+
+      - name: Preprocess (C preprocessor)
+        run: cpp -P -x assembler-with-cpp tests/general.lo3 -o tests/general.preprocessed.lo3
+
+      - name: Run tests
+        id: tests
+        run: ./bin/lo3 tests/general.preprocessed.lo3
+
+      - name: Report test status
+        if: always()
+        run: |
+          if [ "${{ steps.tests.outcome }}" = "success" ]; then
+            echo "## ✅ Tests passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Tests failed" >> $GITHUB_STEP_SUMMARY
+            echo "The test run **failed**. Check the logs above." >> $GITHUB_STEP_SUMMARY
           fi

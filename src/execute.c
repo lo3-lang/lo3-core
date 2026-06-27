@@ -340,7 +340,8 @@ void exec_out(lo3_val a1, lo3_val a2)
 		name = a1.value.string;
 	}
 
-	(void)printf("%63s\n", name);
+	printf("%s\n", name);
+
 }
 
 void exec_in(lo3_val a1, lo3_val a2)
