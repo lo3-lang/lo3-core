@@ -12,6 +12,9 @@ set(LO3_INCLUDES
 # POSIX getline needs _POSIX_C_SOURCE
 add_compile_definitions(_POSIX_C_SOURCE=200809L)
 
+# POSIX getline needs _POSIX_C_SOURCE; syscall() needs _DEFAULT_SOURCE
+add_compile_definitions(_POSIX_C_SOURCE=200809L _DEFAULT_SOURCE)
+
 set(LO3_CORE_SOURCES
     ${LO3_SRC}/var.c
     ${LO3_SRC}/global.c

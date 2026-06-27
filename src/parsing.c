@@ -30,7 +30,7 @@ int pars_isFileValid(char *name, FILE **file) {
 
 	if (len < 4 || strcmp(&name[len - 4], ".lo3") != 0) {
 		lo3_error("File must end with .lo3\n", name);
-		(void)(fclose((*file)));
+		(void)fclose(*file);
 		return -1;
 	}
 	return 0;
@@ -45,8 +45,7 @@ int pars_file(FILE *file) {
 	int pos0 = ftell(file);
 
 	// todo: make getline avaible on other os
-	//
-	// ///// MORE INFORMATIONS /////
+	// ///// More Informations /////
 	// getline is not a c standardized lib and therefore should be defined somewhere else.
 	// Ways to solve that problem:
 	// - Create a getline MACRO and use that here
@@ -64,11 +63,21 @@ parsing:
 			if (line[1] == '.') {
 				LO3_STARTING_LINE = line[2];
 
-			} else if (line[1] == '{') {
+			}
+			else if (line[1] == '{') {
 				// @{1:$10,10:_Hello}
 				// index | type | word
 
 				g_fasterInit(line);
+			}
+			else if(line[1] == ':') {
+
+				cf_fasterLabel(line);
+				// exec_label("$0", "$0");
+			}
+			else if (line[1] == '>') {
+				// jump to label
+				cf_fasterJumptoLabel(line);
 			}
 		}
 
@@ -116,7 +125,8 @@ parsing:
 			isWarped = TRUE;
 			goto parsing;
 
-		} else {
+		}
+		else {
 			lo3_error("Could not find the label, did you misspell it???", "");
 			return -1;
 		}
@@ -318,6 +328,10 @@ int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2) {
 
 	case CNT_big:
 		exec_big(a1, a2);
+		break;
+
+	case BSC_sys:
+		exec_sys(a1, a2);
 		break;
 
 	default:

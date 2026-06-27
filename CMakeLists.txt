@@ -7,6 +7,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/bin)
 
 file(GLOB SOURCES "src/*.c")
+
+# POSIX getline needs _POSIX_C_SOURCE; syscall() needs _DEFAULT_SOURCE
+add_compile_definitions(_POSIX_C_SOURCE=200809L _DEFAULT_SOURCE)
 add_executable(lo3 ${SOURCES})
 target_include_directories(lo3 PRIVATE include)
 
