@@ -117,7 +117,10 @@ void cf_fasterLabel(char line[BUF_SIZE]) {
 
 void cf_fasterJumptoLabel(char line[255]) {
 	
-	if (line == NULL | line[0] == '\0') {
+	if (line == NULL || line[0] == '\0') {
+		lo3_error("Could not execute the fasterLabel func - are you sure crocodile?", line);
+		return;
+	}
 		lo3_error("Could not execute the fasterLabel func - are you sure crocodile?", line);
 		return;
 	}
