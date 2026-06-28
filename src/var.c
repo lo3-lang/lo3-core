@@ -159,7 +159,12 @@ void var_setString(const char *name, char *string) {
 		return;
 	}
 
-	list->array[i]->value.string = string;
+	free(list->array[i]->value.string);
+	list->array[i]->value.string = strdup(string);
+	
+	if (list->array[i]->value.string == NULL) {
+		lo3_error("Out of memory while setting string var", name);
+	}
 }
 
 int var_getNum(const lo3_var *var) {
