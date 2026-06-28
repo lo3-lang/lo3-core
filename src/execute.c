@@ -471,12 +471,6 @@ void exec_sys(lo3_val a1, lo3_val a2)
 {
 
 #ifdef __linux__
-	if (a1.chooseType == 3) {
-		lo3_error("You are not allowed to call any syscall using char* "
-			  "(strings)...",
-			"");
-		return;
-	}
 
 	long arg0, arg1, arg2;
 
