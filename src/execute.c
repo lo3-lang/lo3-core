@@ -17,6 +17,8 @@
 
 #define LOW_32bit_FULL 0xFFFFFFFF
 
+lo3_stack stack = {0};
+
 void exec_new(lo3_val a1, lo3_val a2)
 {
 
@@ -129,7 +131,6 @@ void exec_asn(lo3_val a1, lo3_val a2)
 
 void exec_add(lo3_val a1, lo3_val a2)
 {
-
 	unsigned char buf[64];
 	unsigned char *name;
 
@@ -297,10 +298,15 @@ void exec_jmp(lo3_val a1, lo3_val a2)
 }
 
 // #c
-void exec_call(lo3_val a1, lo3_val a2) {}
+void exec_call(lo3_val a1, lo3_val a2) {
 
-// #C - not in use - UB
-void exec_callS(lo3_val a1, lo3_val a2) {}
+	cf_push(&stack);
+	exec_jmp(a1, a2);
+}
+
+void exec_ret(lo3_val a1, lo3_val a2) {
+	cf_pop(&stack);
+}
 
 void exec_label(lo3_val a1, lo3_val a2)
 {

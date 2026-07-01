@@ -60,7 +60,7 @@ void cf_setCursorPos(const int i) {
 }
 
 int cf_getCursorPos(void) {
-	return -1;
+	return (int)ftell(openFile);
 }
 
 int cf_jumpToLabel(const char *name) {
@@ -124,4 +124,28 @@ void cf_fasterJumptoLabel(char line[255]) {
 	char buf[BUF_SIZE];
 	cf_buildPiece(buf, line, 2); 
 	cf_jumpToLabel(buf);
+}
+
+void cf_pop(lo3_stack *stack) {
+
+	if (stack->nextFreePos <= 0) {
+		lo3_error("There is nothing on the lo3_stack left!", "");
+		return;
+	}
+
+	cf_setCursorPos(stack->values[stack->nextFreePos]);
+
+	// stack will be overwritten by cf_push(...)
+	stack->nextFreePos--;
+}
+
+void cf_push(lo3_stack *stack) {
+
+	if (stack->nextFreePos >= ARRAY_SIZE) {
+		lo3_error("Stack is full!", "");
+		return;
+	}
+	stack->nextFreePos++;
+
+	stack->values[stack->nextFreePos] = cf_getCursorPos();
 }
