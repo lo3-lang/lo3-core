@@ -126,26 +126,26 @@ void cf_fasterJumptoLabel(char line[255]) {
 	cf_jumpToLabel(buf);
 }
 
-void cf_pop(lo3_stack stack) {
+void cf_pop(lo3_stack *stack) {
 
-	if (stack.nextFreePos <= 0) {
+	if (stack->nextFreePos <= 0) {
 		lo3_error("There is nothing on the lo3_stack left!", "");
 		return;
 	}
 
-	cf_setCursorPos(stack.values[stack.nextFreePos]);
+	cf_setCursorPos(stack->values[stack->nextFreePos]);
 
 	// stack will be overwritten by cf_push(...)
-	stack.nextFreePos--;
+	stack->nextFreePos--;
 }
 
-void cf_push(lo3_stack stack) {
+void cf_push(lo3_stack *stack) {
 
-	if (stack.nextFreePos >= ARRAY_SIZE) {
+	if (stack->nextFreePos >= ARRAY_SIZE) {
 		lo3_error("Stack is full!", "");
 		return;
 	}
-	stack.nextFreePos++;
+	stack->nextFreePos++;
 
-	stack.values[stack.nextFreePos] = cf_getCursorPos();
+	stack->values[stack->nextFreePos] = cf_getCursorPos();
 }

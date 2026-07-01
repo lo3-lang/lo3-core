@@ -20,8 +20,8 @@ typedef struct lo3_label {
 } lo3_label;
 
 typedef struct {
-	char nextFreePos;
-	char values[ARRAY_SIZE];
+	int nextFreePos;
+	int values[ARRAY_SIZE];
 } lo3_stack;
 
 extern lo3_label cf;
@@ -39,5 +39,5 @@ void cf_fasterLabel(char line[255]);
 void cf_fasterJumptoLabel(char line[255]);
 
 // call
-void cf_pop(lo3_stack stack);
-void cf_push(lo3_stack stack);
+void cf_pop(lo3_stack *stack);
+void cf_push(lo3_stack *stack);

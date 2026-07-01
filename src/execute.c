@@ -300,12 +300,12 @@ void exec_jmp(lo3_val a1, lo3_val a2)
 // #c
 void exec_call(lo3_val a1, lo3_val a2) {
 
-	cf_push(stack);
+	cf_push(&stack);
 	exec_jmp(a1, a2);
 }
 
 void exec_ret(lo3_val a1, lo3_val a2) {
-	cf_pop(stack);
+	cf_pop(&stack);
 }
 
 void exec_label(lo3_val a1, lo3_val a2)
