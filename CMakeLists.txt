@@ -19,5 +19,9 @@ if(UNIX)
     target_link_libraries(lo3 PRIVATE dl)
 endif()
 
-enable_testing()
-add_subdirectory(test)
+# Tests are optional and off by default. Enable with -DLO3_BUILD_TESTS=ON
+option(LO3_BUILD_TESTS "Build the lo3 unit tests" OFF)
+if(LO3_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(test)
+endif()
