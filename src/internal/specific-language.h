@@ -62,3 +62,4 @@ void exec_cmp(lo3_val a1, lo3_val a2);
 void exec_small(lo3_val a1, lo3_val a2);
 void exec_big(lo3_val a1, lo3_val a2);
 void exec_sys(lo3_val a1, lo3_val a2);
+void exec_ret(lo3_val a1, lo3_val a2);
