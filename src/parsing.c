@@ -85,7 +85,7 @@ parsing:
 			continue;
 		}
 
-		if (strlen(line) < 3) {
+		if (strlen(line) < 2) {
 			lo3_warn("You used some kind of magic line,"
 			         "which is propaply not lo3-core syntax, are you sure you wanna do "
 			         "this???",
