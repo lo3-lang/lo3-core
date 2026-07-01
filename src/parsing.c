@@ -283,11 +283,6 @@ int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2) {
 		exec_call(a1, a2);
 		break;
 
-	case CNT_callS:
-
-		exec_callS(a1, a2);
-		break;
-
 	case CNT_label:
 
 		exec_label(a1, a2);

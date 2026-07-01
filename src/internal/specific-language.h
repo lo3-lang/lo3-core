@@ -54,7 +54,6 @@ void exec_mul(lo3_val a1, lo3_val a2);
 void exec_div(lo3_val a1, lo3_val a2);
 void exec_jmp(lo3_val a1, lo3_val a2);
 void exec_call(lo3_val a1, lo3_val a2);
-void exec_callS(lo3_val a1, lo3_val a2);
 void exec_label(lo3_val a1, lo3_val a2);
 void exec_out(lo3_val a1, lo3_val a2);
 void exec_in(lo3_val a1, lo3_val a2);
