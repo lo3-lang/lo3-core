@@ -277,6 +277,9 @@ void exec_jmp(lo3_val a1, lo3_val a2)
 	}
 
 	if (cf_findLabel(name) == -1) {
+		// need to rush now
+		rush = TRUE;
+		(void)strncpy(rush_target, name, sizeof(rush_target) - 1);
 		return;
 	}
 
