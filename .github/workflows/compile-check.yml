@@ -1,101 +1,38 @@
 name: Compile Check
 
 on:
+  push:
+    branches: [main, "future/**"]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
-  compile:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Build
-        id: build
         run: |
           cmake -B build
           cmake --build build
 
-      - name: Upload binary
-        if: steps.build.outcome == 'success'
-        uses: actions/upload-artifact@v4
-        with:
-          name: lo3-binary
-          path: bin/lo3
+      - name: C unit tests (ctest)
+        run: ctest --test-dir build --output-on-failure
 
-      - name: Report compilation status
+      - name: Rust unit tests
+        working-directory: test/unit/rust
+        run: cargo test -- --test-threads=1
+
+      - name: Syntax tests
+        run: python3 test/syntax/run_syntax_tests.py
+
+      - name: Report status
         if: always()
         run: |
-          if [ "${{ steps.build.outcome }}" = "success" ]; then
-            echo "## ✅ Compilation succeeded" >> $GITHUB_STEP_SUMMARY
-            echo "The source code compiled successfully." >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "## ✅ Build and all test suites passed" >> $GITHUB_STEP_SUMMARY
           else
-            echo "## ❌ Compilation failed" >> $GITHUB_STEP_SUMMARY
-            echo "The source code **failed to compile**. Tests will not run." >> $GITHUB_STEP_SUMMARY
-          fi
-
-  test:
-    needs: compile
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download binary
-        uses: actions/download-artifact@v4
-        with:
-          name: lo3-binary
-          path: bin/
-
-      - name: Make executable
-        run: chmod +x bin/lo3
-
-      - name: Generate aggregate file
-        run: |
-          set -euo pipefail
-
-          SYNTAX_DIR="test/syntax"
-          AGGREGATE="test/general.lo3"
-          AGG_DIR="$(dirname "$AGGREGATE")"
-
-          if [ ! -d "$SYNTAX_DIR" ]; then
-            echo "::error::Syntax test dir '$SYNTAX_DIR' not found"
-            exit 1
-          fi
-
-          shopt -s nullglob
-          files=("$SYNTAX_DIR"/*.lo3)
-
-          if [ ${#files[@]} -eq 0 ]; then
-            echo "::error::No .lo3 test files in '$SYNTAX_DIR'"
-            exit 1
-          fi
-
-          mkdir -p "$AGG_DIR"
-          {
-            echo "@.%"
-            for f in "${files[@]}"; do
-              rel="$(realpath --relative-to="$AGG_DIR" "$f")"
-              echo "#include \"$rel\""
-            done
-          } > "$AGGREGATE"
-
-          echo "::group::Generated aggregate ($AGGREGATE)"
-          cat "$AGGREGATE"
-          echo "::endgroup::"
-
-      - name: Preprocess (C preprocessor)
-        run: cpp -P -x assembler-with-cpp test/general.lo3 -o test/general.preprocessed.lo3
-
-      - name: Run tests
-        id: tests
-        run: ./bin/lo3 test/general.preprocessed.lo3
-
-      - name: Report test status
-        if: always()
-        run: |
-          if [ "${{ steps.tests.outcome }}" = "success" ]; then
-            echo "## ✅ Tests passed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "## ❌ Tests failed" >> $GITHUB_STEP_SUMMARY
-            echo "The test run **failed**. Check the logs above." >> $GITHUB_STEP_SUMMARY
+            echo "## ❌ Build or tests failed" >> $GITHUB_STEP_SUMMARY
+            echo "Check the logs above for the failing step." >> $GITHUB_STEP_SUMMARY
           fi
