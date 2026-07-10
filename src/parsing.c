@@ -32,6 +32,7 @@ int pars_isFileValid(char *name, FILE **file) {
 	if (len < 4 || strcmp(&name[len - 4], ".lo3") != 0) {
 		lo3_error("File must end with .lo3\n", name);
 		(void)(fclose((*file)));
+		*file = NULL; // callers may fclose again — don't hand back a dangling FILE*
 		return -1;
 	}
 	return 0;
