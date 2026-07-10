@@ -1,1 +1,2 @@
-*.lo3 linguist-language=lo3
+*.expected text eol=lf
+*.lo3 text eol=lf linguist-language=lo3
