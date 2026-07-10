@@ -10,7 +10,7 @@ pub const TYPE_VAR: i32    = b'%' as i32;
 pub const FALSE: i8 = 0;
 pub const TRUE:  i8 = 1;
 
-pub const ARRAY_SIZE: usize = 254;
+pub const ARRAY_SIZE: usize = 256;
 pub const G_SIZE:     usize = 100;
 
 // ── lo3_value union ──────────────────────────────────────────────────────────
@@ -115,7 +115,14 @@ pub unsafe fn c_strdup(s: &str) -> *mut i8 {
 }
 
 /// Reset control-flow globals between tests.
+/// cf_addLabel strdup()s every label name into cf.names[], so free them
+/// before zeroing the struct — otherwise each test leaks its labels (#180).
 pub unsafe fn reset_cf() {
+    for i in 0..ARRAY_SIZE {
+        if !cf.names[i].is_null() {
+            libc::free(cf.names[i] as *mut libc::c_void);
+        }
+    }
     std::ptr::write_bytes(&raw mut cf, 0, 1);
     rush        = FALSE;
     isWarped    = FALSE;

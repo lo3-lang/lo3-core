@@ -9,5 +9,10 @@ name = "lo3_tests"
 [dependencies]
 libc = "0.2"
 
+[dev-dependencies]
+# Tests poke process-wide C globals (var list, g[], cf, ...) — they must not
+# run concurrently. Every test is marked #[serial] (issue #180).
+serial_test = "3"
+
 [build-dependencies]
 cc = "1"

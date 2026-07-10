@@ -1,4 +1,5 @@
 use super::*;
+use serial_test::serial;
 use std::ffi::CString;
 
 fn cstr(s: &str) -> CString { CString::new(s).unwrap() }
@@ -7,22 +8,26 @@ fn cstr(s: &str) -> CString { CString::new(s).unwrap() }
 // Output goes to stderr, which is fine in test runs.
 
 #[test]
+#[serial]
 fn warn_basic_no_crash() {
     unsafe { lo3_warn(cstr("test warning").as_ptr(), cstr("ctx").as_ptr()); }
 }
 
 #[test]
+#[serial]
 fn warn_null_context_no_crash() {
     unsafe { lo3_warn(cstr("no context").as_ptr(), std::ptr::null()); }
 }
 
 #[test]
+#[serial]
 fn warn_empty_message_no_crash() {
     // Empty msg triggers the internal lo3_error path — must not crash.
     unsafe { lo3_warn(cstr("").as_ptr(), cstr("ctx").as_ptr()); }
 }
 
 #[test]
+#[serial]
 fn warn_with_line_number_no_crash() {
     unsafe {
         currentLine = 42;
@@ -32,22 +37,26 @@ fn warn_with_line_number_no_crash() {
 }
 
 #[test]
+#[serial]
 fn error_basic_no_crash() {
     unsafe { lo3_error(cstr("test error").as_ptr(), cstr("ctx").as_ptr()); }
 }
 
 #[test]
+#[serial]
 fn error_null_context_no_crash() {
     unsafe { lo3_error(cstr("no ctx error").as_ptr(), std::ptr::null()); }
 }
 
 #[test]
+#[serial]
 fn error_empty_message_no_crash() {
     // Empty msg triggers lo3_warn fallback — must not crash.
     unsafe { lo3_error(cstr("").as_ptr(), cstr("ctx").as_ptr()); }
 }
 
 #[test]
+#[serial]
 fn error_with_line_number_no_crash() {
     unsafe {
         currentLine = 7;

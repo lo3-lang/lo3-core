@@ -1,4 +1,5 @@
 use super::*;
+use serial_test::serial;
 
 // Global array `g` persists between tests; use distinct indices per test to avoid
 // cross-test contamination. Indices >= 50 are reserved for these tests.
@@ -8,22 +9,26 @@ fn num_val(n: i32) -> lo3_val { lo3_val::num(n) }
 // ── g_isSet ───────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn isset_initial_zero() {
     assert_eq!(0, unsafe { g_isSet(50) });
 }
 
 #[test]
+#[serial]
 fn isset_after_set_is_one() {
     unsafe { g_set(51, num_val(5)); }
     assert_eq!(1, unsafe { g_isSet(51) });
 }
 
 #[test]
+#[serial]
 fn isset_oob_high_returns_minus1() {
     assert_eq!(-1, unsafe { g_isSet(100) });
 }
 
 #[test]
+#[serial]
 fn isset_oob_low_returns_minus1() {
     assert_eq!(-1, unsafe { g_isSet(-1) });
 }
@@ -31,6 +36,7 @@ fn isset_oob_low_returns_minus1() {
 // ── g_set / g_get ─────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn set_and_get_num() {
     unsafe {
         g_set(52, num_val(42));
@@ -40,6 +46,7 @@ fn set_and_get_num() {
 }
 
 #[test]
+#[serial]
 fn set_oob_no_crash() {
     unsafe { g_set(200, num_val(1)); }
 }
@@ -47,12 +54,14 @@ fn set_oob_no_crash() {
 // ── g_getNum ─────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn getnum_after_set() {
     unsafe { g_set(53, num_val(99)); }
     assert_eq!(99, unsafe { g_getNum(53) });
 }
 
 #[test]
+#[serial]
 fn getnum_oob_returns_minus1() {
     assert_eq!(-1, unsafe { g_getNum(100) });
 }
@@ -60,6 +69,7 @@ fn getnum_oob_returns_minus1() {
 // ── g_getType / g_setType ─────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn gettype_after_set_is_num() {
     unsafe { g_set(54, num_val(1)); }
     // g_set always writes chooseType=0 (num) for new entries
@@ -67,6 +77,7 @@ fn gettype_after_set_is_num() {
 }
 
 #[test]
+#[serial]
 fn settype_string() {
     unsafe {
         g_set(55, num_val(0));
@@ -77,12 +88,14 @@ fn settype_string() {
 }
 
 #[test]
+#[serial]
 fn settype_oob_returns_minus1() {
     let type_val = lo3_val::num(0);
     assert_eq!(-1, unsafe { g_setType(200, type_val) });
 }
 
 #[test]
+#[serial]
 fn settype_invalid_type_returns_minus1() {
     unsafe { g_set(56, num_val(0)); }
     let bad_type = lo3_val { r#type: TYPE_NUM, chooseType: 99, value: lo3_value { num: 99 } };
@@ -92,6 +105,7 @@ fn settype_invalid_type_returns_minus1() {
 // ── g_getValue ────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn getvalue_returns_placeholder_choosetype_minus1() {
     let v = unsafe { g_getValue(57) };
     assert_eq!(-1, v.chooseType);
@@ -101,6 +115,7 @@ fn getvalue_returns_placeholder_choosetype_minus1() {
 // Indices 60-69 are reserved for these tests.
 
 #[test]
+#[serial]
 fn faster_init_single_num_sets_value() {
     // @{60:$42} — numeric entry must store 42 at index 60
     unsafe {
@@ -111,6 +126,7 @@ fn faster_init_single_num_sets_value() {
 }
 
 #[test]
+#[serial]
 fn faster_init_single_num_marks_isset() {
     // g_isSet must flip to 1 after g_fasterInit writes the entry
     unsafe {
@@ -121,6 +137,7 @@ fn faster_init_single_num_marks_isset() {
 }
 
 #[test]
+#[serial]
 fn faster_init_string_entry_sets_string_type() {
     // @{62:_Hello} — string entry must record chooseType=3
     unsafe {
@@ -131,6 +148,7 @@ fn faster_init_string_entry_sets_string_type() {
 }
 
 #[test]
+#[serial]
 fn faster_init_empty_braces_no_crash() {
     // @{} — nothing to initialise, must not crash or panic
     unsafe {
@@ -140,6 +158,7 @@ fn faster_init_empty_braces_no_crash() {
 }
 
 #[test]
+#[serial]
 fn faster_init_negative_num() {
     // @{63:$-5} — atoi must handle the minus sign correctly
     unsafe {
@@ -150,6 +169,7 @@ fn faster_init_negative_num() {
 }
 
 #[test]
+#[serial]
 fn faster_init_last_valid_index_no_crash() {
     // index 99 is the last in-bounds slot (G_SIZE = 100)
     unsafe {
