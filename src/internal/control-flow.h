@@ -3,7 +3,7 @@
 // true and false so it is more fancy!
 #define TRUE 1
 #define FALSE 0
-#define ARRAY_SIZE 254
+#define ARRAY_SIZE 256
 #define BUF_SIZE 255
 
 extern char rush;

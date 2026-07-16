@@ -1,4 +1,6 @@
-#n _s $3
-#= _s _Hello
-#o %s $0
-#0 $0 $0
+#c "call"
+#o "H"
+#0
+#l "call"
+#o "Oh my god"
+#r

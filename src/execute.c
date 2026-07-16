@@ -398,9 +398,7 @@ void exec_cmp(lo3_val a1, lo3_val a2)
 
 	if (a1.chooseType || a2.chooseType) {
 		lo3_error("You can not compare char*'s,\n"
-			  "Please use the coresponding std-func!, from "
-			  "{string.c}",
-			"");
+	    "Please use the corresponding std-func!", "");
 		return;
 	}
 
@@ -423,10 +421,7 @@ void exec_small(lo3_val a1, lo3_val a2)
 {
 
 	if (a1.chooseType || a2.chooseType) {
-		lo3_error("You can not compare char*'s,\n"
-			  "Please use the coresponding std-func!, from "
-			  "{string.c}",
-			"");
+		lo3_error("You can not compare char*'s,\nPlease use the corresponding std-func!", "");
 		return;
 	}
 
@@ -450,9 +445,7 @@ void exec_big(lo3_val a1, lo3_val a2)
 
 	if (a1.chooseType || a2.chooseType) {
 		lo3_error("You can not compare char*'s,\n"
-			  "Please use the coresponding std-func!, from "
-			  "{string.c}",
-			"");
+	    "Please use the corresponding std-func!", "");
 		return;
 	}
 

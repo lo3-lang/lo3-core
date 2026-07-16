@@ -36,10 +36,14 @@ This will start the interpreter and run your code.
 | Input/STDIN | ✅ |
 | Output/STDOUT | ✅ |
 | Operating with vars | ✅ |
-| Operating with g[] | ⚠️ |
+| Operating with g[] | ⚠️ %2% |
 | Manually exiting with 0 or 1 | ✅ |
 | Auto exiting | ✅ |
 
+---
+
+%2%: to set some value into g[] is only possible with the buildin macro system.
+get g[X]... from every cmd
 ## Compile it yourself
 
 ### Linux:

@@ -1,4 +1,5 @@
 // Copyright (c) 2026 seesee010
+// Copyright (c) 2026 zahanzo
 // Read the License file for more informations about the license.
 //
 // You can find todos by reading the "todo" blocks.
@@ -30,14 +31,51 @@ int pars_isFileValid(char *name, FILE **file) {
 
 	if (len < 4 || strcmp(&name[len - 4], ".lo3") != 0) {
 		lo3_error("File must end with .lo3\n", name);
-		(void)fclose(*file);
+		(void)(fclose((*file)));
 		return -1;
 	}
 	return 0;
 }
 
-int pars_file(FILE *file) {
+// 0xRobert: Function needed to not break intensity
+static char* pars_tokenize(char *ptr, char *arg) {
+	int j = 0;
 
+	while (*ptr == ' ' || *ptr == '\t') {
+		ptr++;
+	}
+
+	if (*ptr == '\0') {
+		return NULL;
+	}
+
+	if (*ptr == '"') {
+		arg[j++] = TYPE_string;
+		ptr++;
+
+		while (*ptr && j < 62) {
+			if (*ptr == '\\' && *(ptr + 1) != '\0') {
+				arg[j++] = *ptr++;
+				arg[j++] = *ptr++;
+				continue;
+			}
+			if (*ptr == '"') {
+				ptr++;
+				break;
+			}
+			arg[j++] = *ptr++;
+		}
+		arg[j] = '\0';
+	}else{
+		while (*ptr && *ptr != ' ' && *ptr != '\t' && j < 62) {
+			arg[j++] = *ptr++;
+		}
+		arg[j] = '\0';
+	}
+	return ptr;
+}
+
+int pars_file(FILE *file) {
 	char *line = NULL;
 	size_t len = 0;
 	char arg1[64] = {0}, arg2[64] = {0};
@@ -45,70 +83,94 @@ int pars_file(FILE *file) {
 	int pos0 = ftell(file);
 
 	// todo: make getline avaible on other os
-	// ///// More Informations /////
+	//
+	// ///// MORE INFORMATIONS /////
 	// getline is not a c standardized lib and therefore should be defined somewhere else.
 	// Ways to solve that problem:
 	// - Create a getline MACRO and use that here
 	// - use the preprocessor funcs, like ifdef check for linux and win etc
 
 parsing:
-	while (lastLineOffset = ftell(file), GETLINE(&line, &len, file)) {
+	while(lastLineOffset = ftell(file), GETLINE(&line, &len, file)) {
 
 		currentLine++;
-		line[strcspn(line, "\n")] = '\0';
+		line[strcspn(line, "\r\n")] = '\0'; 
 
-		// syntax sugar
+		// 0xRobert: Ignore emoty lines or comments
+		if (line[0] == '\0' || (line[0] == '/' && line[1] == '/')) {
+			free(line);
+			line = NULL;
+			len = 0;
+			continue;
+		}
+
+		// 0xRobert: Treats syntax sugar
 		if (line[0] == '@') {
-
 			if (line[1] == '.') {
-				LO3_STARTING_LINE = line[2];
+				int idx = 2;
+				while (line[idx] == ' ' || line[idx] == '\t') idx++;
+				if (line[idx] != '\0') {
+					LO3_STARTING_LINE = line[idx];
+				}
 
+				free(line);
+				line = NULL;
+				len = 0;
+				continue; 
 			}
 			else if (line[1] == '{') {
-				// @{1:$10,10:_Hello}
-				// index | type | word
-
 				g_fasterInit(line);
-			}
-			else if(line[1] == ':') {
-
-				cf_fasterLabel(line);
-				// exec_label("$0", "$0");
-			}
-			else if (line[1] == '>') {
-				// jump to label
-				cf_fasterJumptoLabel(line);
+				free(line);
+				line = NULL;
+				len = 0;
+				continue;
 			}
 		}
 
+		// 0xRobert: Verify if the line starts with a character invalid of cmd
 		if (line[0] != LO3_STARTING_LINE) {
+			free(line);
+			line = NULL;
+			len = 0;
 			continue;
 		}
 
 		if (strlen(line) < 2) {
-			lo3_warn("You used some kind of magic line,"
-			         "which is propaply not lo3-core syntax, are you sure you wanna do "
-			         "this???",
-			         "");
-			continue;
-		}
+		lo3_warn("You used some kind of magic line,"
+		         "which is propaply not lo3-core syntax, are you sure you wanna do "
+		         "this???",
+		         "");
+		free(line);
+		line = NULL;
+		len = 0;
+		continue;
+    }
 
 		lo3_cmds cmds = (lo3_cmds)line[1];
 
-		// find the TYPES of arg
+		memset(arg1, 0, sizeof(arg1));
+		memset(arg2, 0, sizeof(arg2));
 
-		// could lead to wrong var names, but else it could eventually crash.
-		// Both are not that great.
-		// maybe there could be a check or lo3_warn() about wrong var name size.
+		char *ptr = &line[2];
+		int arg_idx = 0;
+		char *args[2] = {arg1, arg2};
 
-		(void)sscanf(&line[3], " %63s %63s", arg1, arg2);
+	   // 0xRobert: Simplify loop to not break intensity
+		while(arg_idx < 2) {
+			ptr = pars_tokenize(ptr, args[arg_idx]);
+			
+			if (ptr == NULL) {
+				break;
+			}
+			arg_idx++;
+		}
 
 		lo3_val a1 = pars_resv(arg1);
 		lo3_val a2 = pars_resv(arg2);
 
 		signed int returnVal = pars_dispatch(cmds, a1, a2);
 
-		if (returnVal != -1) {
+		if(returnVal != -1) {
 			free(line);
 			return returnVal;
 		}
@@ -118,16 +180,13 @@ parsing:
 		len = 0;
 	}
 
-	if (rush) {
+	if(rush) {
 		fseek(file, pos0, SEEK_SET);
-
 		if (!isWarped) {
 			isWarped = TRUE;
 			goto parsing;
-
-		}
-		else {
-			lo3_error("Could not find the label, did you misspell it???", "");
+		}else{
+			lo3_error("Could not find the label...", "");
 			return -1;
 		}
 	}
@@ -143,6 +202,12 @@ lo3_val pars_resv(char type[64]) {
 	lo3_var *var;
 
 	switch (result.type) {
+	
+	// 0xRobert: Treats the empty args in a safe way
+	case '\0':
+		result.chooseType = 0;
+		result.value.num = 0;
+		break;
 
 	// find the corresponding type
 	case TYPE_num:
@@ -183,8 +248,7 @@ lo3_val pars_resv(char type[64]) {
 		break;
 
 	case TYPE_string:
-
-		result.value.string = &type[1];
+		result.value.string = strdup(&type[1]);
 		result.chooseType = 3;
 		break;
 
@@ -220,7 +284,7 @@ lo3_val pars_resv(char type[64]) {
 		break;
 	default:
 
-		lo3_error("Could not fild the corresponding type! …\n Please enter "
+		lo3_error("Could not find the corresponding type! …\n Please enter "
 		          "something valid,"
 		          "You may want to visit "
 		          "https://github.com/lo3-lang/learn-the-syntax !!!",
