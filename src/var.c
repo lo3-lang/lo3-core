@@ -118,8 +118,9 @@ void var_free(const char *name) {
 void var_freeAll(void) {
 
 	for (int i = 0; i < list->index; i++) {
-		if (list->array[i]->type == 3)
+		if (list->array[i]->type == 3) {
 			free(list->array[i]->value.string);
+		}
 		free(list->array[i]);
 	}
 
@@ -139,7 +140,8 @@ void var_setNum(const char *name, int num) {
 	if (list->array[i]->type == 3) {
 		lo3_error("Can not set <var> to any num, because its type is set to string!", name);
 		return;
-	} else {
+	}
+	else {
 		list->array[i]->value.num = num;
 	}
 }
@@ -157,7 +159,12 @@ void var_setString(const char *name, char *string) {
 		return;
 	}
 
-	list->array[i]->value.string = string;
+	free(list->array[i]->value.string);
+	list->array[i]->value.string = strdup(string);
+	
+	if (list->array[i]->value.string == NULL) {
+		lo3_error("Out of memory while setting string var", name);
+	}
 }
 
 int var_getNum(const lo3_var *var) {

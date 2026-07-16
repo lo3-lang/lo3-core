@@ -32,7 +32,7 @@ This will start the interpreter and run your code.
 | :--- | :--- |
 | ALU Operations | ✅ |
 | Control Flow | ✅ |
-| Func Calling | ❌ |
+| Func Calling | ✅ |
 | Input/STDIN | ✅ |
 | Output/STDOUT | ✅ |
 | Operating with vars | ✅ |

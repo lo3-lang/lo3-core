@@ -167,6 +167,10 @@ void test_pars_dispatch_ret_good_returns_zero(void) {
 
 void test_pars_dispatch_ret_bad_returns_one(void) {
     lo3_val dummy = {0};
+<<<<<<< Updated upstream
+=======
+    char arr[2] = {0};
+>>>>>>> Stashed changes
     int r = pars_dispatch(RET_bad, dummy, dummy);
     TEST_ASSERT_EQUAL_INT(1, r);
 }
@@ -176,6 +180,10 @@ void test_pars_dispatch_exec_new_returns_minus1(void) {
     unsigned char name[] = "dispatch_var";
     a1.type = TYPE_string; a1.chooseType = 3; a1.value.string = name;
     a2.type = TYPE_num;    a2.chooseType = 0; a2.value.num    = 0;
+<<<<<<< Updated upstream
+=======
+    char arr[2] = {0};
+>>>>>>> Stashed changes
     int r = pars_dispatch(CNT_new, a1, a2);
     TEST_ASSERT_EQUAL_INT(-1, r); // exec functions return -1 via dispatch
     TEST_ASSERT_TRUE(var_find("dispatch_var") >= 0);

@@ -135,7 +135,7 @@ parsing:
 			continue;
 		}
 
-		if (strlen(line) < 3) {
+		if (strlen(line) < 2) {
 		lo3_warn("You used some kind of magic line,"
 		         "which is propaply not lo3-core syntax, are you sure you wanna do "
 		         "this???",
@@ -151,7 +151,7 @@ parsing:
 		memset(arg1, 0, sizeof(arg1));
 		memset(arg2, 0, sizeof(arg2));
 
-		char *ptr = &line[3];
+		char *ptr = &line[2];
 		int arg_idx = 0;
 		char *args[2] = {arg1, arg2};
 
@@ -347,11 +347,6 @@ int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2) {
 		exec_call(a1, a2);
 		break;
 
-	case CNT_callS:
-
-		exec_callS(a1, a2);
-		break;
-
 	case CNT_label:
 
 		exec_label(a1, a2);
@@ -392,6 +387,14 @@ int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2) {
 
 	case CNT_big:
 		exec_big(a1, a2);
+		break;
+
+	case BSC_sys:
+		exec_sys(a1, a2);
+		break;
+
+	case RET_smart:
+		exec_ret(a1, a2);
 		break;
 
 	default:

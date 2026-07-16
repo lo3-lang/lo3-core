@@ -7,3 +7,7 @@ CMakeFiles/
 Makefile
 CMakeCache.txt
 cmake_install.cmake
+compile_commands.json
+bin/*
+!bin/lo3.wasm
+CTestTestfile.cmake

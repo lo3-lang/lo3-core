@@ -22,8 +22,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	openFile = file;
-	// TODO:
-	// let the system(cpp file) run before
+	// todo: let the system(cpp file) run before
 	// ///// More Informations /////
 	// Only run that call if file ends with .LO3 or the --cpp flag is set!
 	
