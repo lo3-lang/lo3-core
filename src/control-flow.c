@@ -42,6 +42,26 @@ int cf_addLabel(const char *name, const int pos) {
 	return 0;
 }
 
+int cf_delLabel(const char *name) {
+
+	if (cf.nextFreePos < 1) {
+		return -1;
+	}
+
+	// is already known?
+	int buf;
+	buf = cf_findLabel(name);
+
+	if (buf == -1) {
+		lo3_error("Label could not be found: <labelname> ", name);
+		return -1;
+	}
+
+	free(cf.names[buf]);
+	cf.names[buf] = NULL;
+	return 0;
+}
+
 int cf_getPos(const char *name) {
 
 	int index = cf_findLabel(name);
@@ -141,7 +161,7 @@ void cf_pop(lo3_stack *stack) {
 
 void cf_push(lo3_stack *stack) {
 
-	if (stack->nextFreePos >= ARRAY_SIZE) {
+	if (stack->nextFreePos >= ARRAY_SIZE - 1) {
 		lo3_error("Stack is full!", "");
 		return;
 	}

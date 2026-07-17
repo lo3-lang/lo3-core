@@ -4,3 +4,22 @@
 #l "call"
 #o "Oh my god"
 #r
+
+//////////////
+_start:
+	...
+	// c std lib
+	call main
+	...
+
+int main(void) {
+	(void)call();
+	(void)printf("H");
+	return 0;
+}
+
+void call(void) {
+	(void)printf("Oh my god");
+	return ;
+}
+//////////////

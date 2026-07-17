@@ -311,6 +311,46 @@ void exec_ret(lo3_val a1, lo3_val a2) {
 	cf_pop(&stack);
 }
 
+void exec_push(lo3_val a1, lo3_val a2) {
+
+	lo3_val val;
+	int type;
+
+	if (a1.chooseType == 0) {
+		val.chooseType = 0;
+		val.value.num = a1.value.num;
+		g_push(val);
+		return;
+	} 
+	
+	// a1 is not a int anymore, now: var
+	lo3_var *var = var_get(a1.value.string);
+	type = var_getType(var);
+
+	if (type == 0) {
+		val.chooseType = 0;
+		val.value.num = var_getNum(var);
+		val.type = 0;
+	}
+	else {
+		val.chooseType = 3;
+		val.value.string = (unsigned char *)var_getString(var);
+		val.type = 3;
+	}
+	g_push(val);
+}
+
+void exec_pop(lo3_val a1, lo3_val a2) {
+	const lo3_val buf = g_pop();
+	
+	if (buf.chooseType == 3) {
+		var_setString(a1.value.string, buf.value.string);
+		return;
+	}
+
+	var_setNum(a1.value.string, buf.value.num);
+}
+
 void exec_label(lo3_val a1, lo3_val a2)
 {
 
@@ -336,6 +376,42 @@ void exec_label(lo3_val a1, lo3_val a2)
 	cf_addLabel(name, lastLineOffset);
 }
 
+void exec_kiLab(lo3_val a1, lo3_val a2) {
+
+	char buf[64];
+	char *name;
+
+	if (!a1.chooseType) {
+		(void)snprintf(buf, sizeof(buf), "%d", a1.value.num);
+		name = buf;
+	} else {
+		name = a1.value.string;
+	}
+	(void)cf_delLabel(name);
+}
+
+void exec_init(lo3_val a1, lo3_val a2) {
+	g_init();
+}
+
+// this is a realy dirty func! do never use this in real production, but here i dont mind.
+// the time to develop a real str_unescape() func would be much longer than this. with a whole more checks.
+// if you want to be precise, yes! i see that func as a todo, but i really dont care actually...
+void str_unescape_simple(unsigned char *s)
+{
+	unsigned char *src = s, *dst = s;
+
+	while (*src) {
+		if (*src == '\\') {
+			if (*(src + 1) == 'n')      { *dst++ = '\n'; src += 2; continue; }
+			else if (*(src + 1) == 't') { *dst++ = '\t'; src += 2; continue; }
+			else if (*(src + 1) == '0') { *dst++ = '\0'; src += 2; continue; }
+		}
+		*dst++ = *src++;
+	}
+	*dst = '\0';
+}
+
 void exec_out(lo3_val a1, lo3_val a2)
 {
 
@@ -349,6 +425,9 @@ void exec_out(lo3_val a1, lo3_val a2)
 		name = a1.value.string;
 	}
 
+	// ...should not use this func...
+	str_unescape_simple(name);
+	
 	printf("%s\n", name);
 
 }

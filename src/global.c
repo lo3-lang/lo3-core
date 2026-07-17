@@ -1,5 +1,6 @@
 #include "./internal/global.h"
 #include "./internal/core.h"
+#include "internal/control-flow.h"
 #include "internal/specific-language.h"
 #include <limits.h>
 #include <stdint.h>
@@ -10,6 +11,7 @@
 struct lo3_g {
 	lo3_val value[G_SIZE];
 	int isSet[G_SIZE];
+	int nextFreePos;
 };
 
 lo3_g g;
@@ -199,4 +201,32 @@ void g_fasterInit(char *line) {
 		value = pars_resv(buf);
 		g_set(i, value);
 	}
+}
+
+void g_init() {
+	g.nextFreePos = 0;
+}
+
+int g_push(lo3_val value) {
+
+	if (g.nextFreePos >= ARRAY_SIZE - 1) {
+		lo3_error("g[] is full!", "");
+		return -1;
+	}
+
+	g_set(g.nextFreePos, value);
+	g.nextFreePos++;
+	return 0;
+}
+
+lo3_val g_pop() {
+
+	lo3_val value;
+	if (g.nextFreePos < 1) {
+		value.chooseType = -1;
+		return value;
+	}
+
+	g.nextFreePos--;
+	return g_get(g.nextFreePos);
 }

@@ -16,3 +16,7 @@ int g_setType(int index, lo3_val type);
 
 lo3_val g_getValue(int index);
 void g_fasterInit(char *line);
+
+int g_push(lo3_val value);
+lo3_val g_pop();
+void g_init();
