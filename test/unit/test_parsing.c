@@ -12,9 +12,21 @@
 #include "../../src/internal/core.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // openFile defined in main.c — stub for tests
 FILE *openFile = NULL;
+
+// Build a temp-file path portably (#154): /tmp does not exist on stock Windows,
+// so pick the first temp dir the environment offers and fall back to /tmp.
+static const char *tmp_path(const char *name, char *buf, size_t size) {
+    const char *dir = getenv("TMPDIR");
+    if (!dir) dir = getenv("TEMP");
+    if (!dir) dir = getenv("TMP");
+    if (!dir) dir = "/tmp";
+    snprintf(buf, size, "%s/%s", dir, name);
+    return buf;
+}
 
 void setUp(void) {
     var_init();
@@ -73,11 +85,15 @@ void test_pars_resv_string_single_char(void) {
     TEST_ASSERT_EQUAL_STRING("x", (const char *)v.value.string);
 }
 
-void test_pars_resv_string_points_into_buffer(void) {
-    // pars_resv returns &type[1] for strings — pointer into the input buffer
+void test_pars_resv_string_returns_copy(void) {
+    // pars_resv strdup()s strings — the result must survive the input buffer
     char arg[64] = "_world";
     lo3_val v = pars_resv(arg);
-    TEST_ASSERT_EQUAL_PTR(&arg[1], v.value.string);
+    TEST_ASSERT_NOT_NULL(v.value.string);
+    TEST_ASSERT_NOT_EQUAL(&arg[1], (const char *)v.value.string);
+    memset(arg, 0, sizeof(arg));
+    TEST_ASSERT_EQUAL_STRING("world", (const char *)v.value.string);
+    free((void *)v.value.string);
 }
 
 // --- pars_resv: TYPE_var (%) ---
@@ -125,34 +141,38 @@ void test_pars_resv_array_resolves_num(void) {
 // --- pars_isFileValid ---
 
 void test_pars_isFileValid_valid_lo3_file(void) {
-    const char *path = "/tmp/lo3_unit_test_valid.lo3";
+    char path[512];
+    tmp_path("lo3_unit_test_valid.lo3", path, sizeof(path));
     FILE *tmp = fopen(path, "w");
     TEST_ASSERT_NOT_NULL(tmp);
     fclose(tmp);
 
     FILE *f = NULL;
-    int r = pars_isFileValid((char *)path, &f);
+    int r = pars_isFileValid(path, &f);
     TEST_ASSERT_EQUAL_INT(0, r);
     if (f) fclose(f);
     remove(path);
 }
 
 void test_pars_isFileValid_wrong_extension(void) {
-    const char *path = "/tmp/lo3_unit_test_wrong.txt";
+    char path[512];
+    tmp_path("lo3_unit_test_wrong.txt", path, sizeof(path));
     FILE *tmp = fopen(path, "w");
     TEST_ASSERT_NOT_NULL(tmp);
     fclose(tmp);
 
     FILE *f = NULL;
-    int r = pars_isFileValid((char *)path, &f);
+    int r = pars_isFileValid(path, &f);
     TEST_ASSERT_EQUAL_INT(-1, r);
     if (f) fclose(f);
     remove(path);
 }
 
 void test_pars_isFileValid_nonexistent_file(void) {
+    char path[512];
+    tmp_path("lo3_does_not_exist_at_all.lo3", path, sizeof(path));
     FILE *f = NULL;
-    int r = pars_isFileValid("/tmp/lo3_does_not_exist_at_all.lo3", &f);
+    int r = pars_isFileValid(path, &f);
     TEST_ASSERT_EQUAL_INT(-1, r);
 }
 
@@ -199,7 +219,7 @@ int main(void) {
 
     RUN_TEST(test_pars_resv_string_basic);
     RUN_TEST(test_pars_resv_string_single_char);
-    RUN_TEST(test_pars_resv_string_points_into_buffer);
+    RUN_TEST(test_pars_resv_string_returns_copy);
 
     RUN_TEST(test_pars_resv_var_resolves_num_var);
     RUN_TEST(test_pars_resv_var_resolves_string_var);

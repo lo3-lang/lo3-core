@@ -1,21 +1,22 @@
 use super::*;
+use serial_test::serial;
 use std::ffi::CString;
 
 fn setup() { unsafe { reset_cf(); } }
+fn teardown() { unsafe { reset_cf(); } }
 fn cstr(s: &str) -> CString { CString::new(s).unwrap() }
 
 macro_rules! with_cf {
-    ($body:block) => {{ setup(); $body; }};
+    ($body:block) => {{ setup(); $body; teardown(); }};
 }
 
-// IMPORTANT: cf_addLabel stores raw pointers into cf.names[].
-// Every CString whose pointer is passed to cf_addLabel MUST be bound to a
-// let binding that lives for the full duration of the test — temporaries are
-// dropped at the end of the statement, leaving a dangling pointer in cf.names.
+// cf_addLabel strdup()s the name into cf.names[], so the malloc'd copies must
+// be freed after each test — reset_cf() (setup and teardown) takes care of that.
 
 // ── cf_findLabel ──────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn findlabel_empty_returns_minus1() {
     with_cf!({
         assert_eq!(-1, unsafe { cf_findLabel(cstr("any").as_ptr()) });
@@ -23,6 +24,7 @@ fn findlabel_empty_returns_minus1() {
 }
 
 #[test]
+#[serial]
 fn findlabel_after_add() {
     with_cf!({
         let alpha = cstr("alpha");
@@ -32,6 +34,7 @@ fn findlabel_after_add() {
 }
 
 #[test]
+#[serial]
 fn findlabel_unknown_returns_minus1() {
     with_cf!({
         let known = cstr("known");
@@ -41,6 +44,7 @@ fn findlabel_unknown_returns_minus1() {
 }
 
 #[test]
+#[serial]
 fn findlabel_multiple() {
     with_cf!({
         let l1 = cstr("l1");
@@ -61,6 +65,7 @@ fn findlabel_multiple() {
 // ── cf_addLabel ───────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn addlabel_returns_zero_on_success() {
     with_cf!({
         let lbl = cstr("newlabel");
@@ -69,6 +74,7 @@ fn addlabel_returns_zero_on_success() {
 }
 
 #[test]
+#[serial]
 fn addlabel_duplicate_returns_minus1() {
     with_cf!({
         let dup = cstr("dup");
@@ -78,6 +84,7 @@ fn addlabel_duplicate_returns_minus1() {
 }
 
 #[test]
+#[serial]
 fn addlabel_increments_count() {
     with_cf!({
         let a = cstr("a");
@@ -91,6 +98,7 @@ fn addlabel_increments_count() {
 }
 
 #[test]
+#[serial]
 fn addlabel_full_returns_minus1() {
     with_cf!({
         let labels: Vec<CString> = (0..ARRAY_SIZE - 1)
@@ -107,6 +115,7 @@ fn addlabel_full_returns_minus1() {
 // ── cf_getPos ─────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn getpos_known_label() {
     with_cf!({
         let pos_test = cstr("pos_test");
@@ -116,6 +125,7 @@ fn getpos_known_label() {
 }
 
 #[test]
+#[serial]
 fn getpos_unknown_returns_minus1() {
     with_cf!({
         assert_eq!(-1, unsafe { cf_getPos(cstr("ghost").as_ptr()) });
@@ -123,6 +133,7 @@ fn getpos_unknown_returns_minus1() {
 }
 
 #[test]
+#[serial]
 fn getpos_multiple() {
     with_cf!({
         let x = cstr("x");
@@ -139,6 +150,7 @@ fn getpos_multiple() {
 // ── cf_getCursorPos ───────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn getcursorpos_always_minus1() {
     assert_eq!(-1, unsafe { cf_getCursorPos() });
 }
@@ -146,6 +158,7 @@ fn getcursorpos_always_minus1() {
 // ── cf_jumpToLabel ────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn jumptolabel_nonexistent_returns_minus1() {
     with_cf!({
         assert_eq!(-1, unsafe { cf_jumpToLabel(cstr("noexist").as_ptr()) });
@@ -153,6 +166,7 @@ fn jumptolabel_nonexistent_returns_minus1() {
 }
 
 #[test]
+#[serial]
 fn jumptolabel_existing_returns_zero() {
     with_cf!({
         let jmp = cstr("jmp_target");
@@ -172,6 +186,7 @@ fn jumptolabel_existing_returns_zero() {
 // ── rush / isWarped flags ─────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn rush_initially_false() {
     with_cf!({
         assert_eq!(FALSE, unsafe { rush });
@@ -179,6 +194,7 @@ fn rush_initially_false() {
 }
 
 #[test]
+#[serial]
 fn iswarped_initially_false() {
     with_cf!({
         assert_eq!(FALSE, unsafe { isWarped });

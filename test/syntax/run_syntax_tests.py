@@ -9,6 +9,8 @@ import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 BIN = os.path.join(REPO_ROOT, "bin", "lo3")
+if os.name == "nt":
+    BIN += ".exe"
 
 def run_syntax_tests():
     if not os.path.isfile(BIN):
@@ -34,19 +36,25 @@ def run_syntax_tests():
             print(f"[SKIP] {base}  (no .expected file)")
             continue
 
-        with open(exp_path) as f:
-            expected = f.read()
+        with open(exp_path, encoding="utf-8", newline="") as f:
+            expected = f.read().replace("\r\n", "\n")
+
+        exp_rc = 0
+        rc_path = os.path.join(SCRIPT_DIR, base + ".exitcode")
+        if os.path.isfile(rc_path):
+            with open(rc_path) as f:
+                exp_rc = int(f.read().strip())
 
         result = subprocess.run([BIN, lo3_path], capture_output=True, timeout=10)
-        actual = result.stdout.decode("utf-8")
+        actual = result.stdout.decode("utf-8").replace("\r\n", "\n")
 
-        if actual == expected and result.returncode == 0:
+        if actual == expected and result.returncode == exp_rc:
             print(f"[PASS] {base}")
             passed += 1
         else:
             print(f"[FAIL] {base}")
-            if result.returncode != 0:
-                print(f"       exit code: {result.returncode}")
+            if result.returncode != exp_rc:
+                print(f"       exit code: expected {exp_rc}, got {result.returncode}")
             if actual != expected:
                 exp_lines = expected.splitlines()
                 act_lines = actual.splitlines()

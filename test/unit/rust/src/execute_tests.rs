@@ -1,4 +1,5 @@
 use super::*;
+use serial_test::serial;
 use std::ffi::{CStr, CString};
 
 static mut DUMMY: [i8; 2] = [0, 0];
@@ -9,7 +10,12 @@ fn setup() {
         reset_cf();
     }
 }
-fn teardown() { unsafe { var_freeAll(); } }
+fn teardown() {
+    unsafe {
+        var_freeAll();
+        reset_cf(); // frees labels strdup'd by exec_label
+    }
+}
 
 macro_rules! with_exec {
     ($body:block) => {{ setup(); $body; teardown(); }};
@@ -23,6 +29,7 @@ fn dummy() -> *mut i8 { unsafe { DUMMY.as_mut_ptr() } }
 // ── exec_new ─────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn new_creates_num_var() {
     with_exec!({
         unsafe { exec_new(sval("myvar"), nval(0), dummy()); }
@@ -31,6 +38,7 @@ fn new_creates_num_var() {
 }
 
 #[test]
+#[serial]
 fn new_creates_string_var() {
     with_exec!({
         unsafe { exec_new(sval("strvar"), nval(3), dummy()); }
@@ -39,6 +47,7 @@ fn new_creates_string_var() {
 }
 
 #[test]
+#[serial]
 fn new_duplicate_no_crash() {
     with_exec!({
         unsafe {
@@ -52,6 +61,7 @@ fn new_duplicate_no_crash() {
 // ── exec_free ────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn free_deletes_var() {
     with_exec!({
         unsafe {
@@ -63,6 +73,7 @@ fn free_deletes_var() {
 }
 
 #[test]
+#[serial]
 fn free_nonexistent_no_crash() {
     with_exec!({
         unsafe { exec_free(sval("ghost"), nval(0), dummy()); }
@@ -72,6 +83,7 @@ fn free_nonexistent_no_crash() {
 // ── exec_asn ─────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn asn_assigns_num() {
     with_exec!({
         unsafe {
@@ -84,6 +96,7 @@ fn asn_assigns_num() {
 }
 
 #[test]
+#[serial]
 fn asn_assigns_string() {
     with_exec!({
         unsafe {
@@ -98,6 +111,7 @@ fn asn_assigns_string() {
 }
 
 #[test]
+#[serial]
 fn asn_nonexistent_no_crash() {
     with_exec!({
         unsafe { exec_asn(sval("noexist"), nval(1), dummy()); }
@@ -107,6 +121,7 @@ fn asn_nonexistent_no_crash() {
 // ── exec_add ─────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn add_basic() {
     with_exec!({
         unsafe {
@@ -120,6 +135,7 @@ fn add_basic() {
 }
 
 #[test]
+#[serial]
 fn add_negative_operand() {
     with_exec!({
         unsafe {
@@ -133,6 +149,7 @@ fn add_negative_operand() {
 }
 
 #[test]
+#[serial]
 fn add_nonexistent_no_crash() {
     with_exec!({
         unsafe { exec_add(sval("noexist"), nval(1), dummy()); }
@@ -142,6 +159,7 @@ fn add_nonexistent_no_crash() {
 // ── exec_sub ─────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn sub_basic() {
     with_exec!({
         unsafe {
@@ -155,6 +173,7 @@ fn sub_basic() {
 }
 
 #[test]
+#[serial]
 fn sub_result_negative() {
     with_exec!({
         unsafe {
@@ -170,6 +189,7 @@ fn sub_result_negative() {
 // ── exec_mul ─────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn mul_basic() {
     with_exec!({
         unsafe {
@@ -183,6 +203,7 @@ fn mul_basic() {
 }
 
 #[test]
+#[serial]
 fn mul_by_zero() {
     with_exec!({
         unsafe {
@@ -198,6 +219,7 @@ fn mul_by_zero() {
 // ── exec_div ─────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn div_basic() {
     with_exec!({
         unsafe {
@@ -211,6 +233,7 @@ fn div_basic() {
 }
 
 #[test]
+#[serial]
 fn div_truncates() {
     with_exec!({
         unsafe {
@@ -224,6 +247,7 @@ fn div_truncates() {
 }
 
 #[test]
+#[serial]
 fn div_by_zero_no_crash_value_unchanged() {
     with_exec!({
         unsafe {
@@ -239,6 +263,7 @@ fn div_by_zero_no_crash_value_unchanged() {
 // ── exec_label ───────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn label_registers_label() {
     with_exec!({
         unsafe { exec_label(sval("myLabel"), nval(0), dummy()); }
@@ -247,6 +272,7 @@ fn label_registers_label() {
 }
 
 #[test]
+#[serial]
 fn label_duplicate_no_crash() {
     with_exec!({
         unsafe {
@@ -260,6 +286,7 @@ fn label_duplicate_no_crash() {
 // ── exec_out ─────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn out_num_no_crash() {
     with_exec!({
         unsafe { exec_out(nval(42), nval(0), dummy()); }
@@ -267,6 +294,7 @@ fn out_num_no_crash() {
 }
 
 #[test]
+#[serial]
 fn out_string_no_crash() {
     with_exec!({
         unsafe { exec_out(sval("hello world"), nval(0), dummy()); }

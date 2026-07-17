@@ -7,6 +7,7 @@ fn main() {
         .file(format!("{src}/execute.c"))
         .file(format!("{src}/warnings.c"))
         .file(format!("{src}/parsing.c"))
+        .file(format!("{src}/lo3-getLine.c")) // Windows getline shim (#ifdef _WIN32 inside)
         .file("stubs.c")
         .include(format!("{src}/internal"))
         .define("_POSIX_C_SOURCE", "200809L")

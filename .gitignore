@@ -1,5 +1,7 @@
 build/*
 .cache/
+test/unit/rust/target/
+__pycache__/
 review.md
 build_plain/
 build_test/

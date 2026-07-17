@@ -3,6 +3,7 @@
 # Master test runner: Rust unit tests + C unit test (test_parsing) + syntax tests.
 
 import os
+import shutil
 import subprocess
 import sys
 
@@ -24,49 +25,59 @@ def run(cmd, **kwargs):
 
 def run_rust_unit_tests():
     section("UNIT TESTS — Rust (var / global / control-flow / execute / warnings)")
+
+    if shutil.which("cargo") is None:
+        print("  cargo not found — SKIPPING Rust unit tests")
+        return "SKIP (cargo not found)"
+
     r = run(["cargo", "test"], cwd=RUST_DIR)
-    return r.returncode == 0
+    return "PASS" if r.returncode == 0 else "FAIL"
 
 
 def run_c_unit_tests():
     section("UNIT TESTS — C/Unity (test_parsing)")
 
+    missing = [tool for tool in ("cmake", "ctest") if shutil.which(tool) is None]
+    if missing:
+        print(f"  {'/'.join(missing)} not found — SKIPPING C unit tests")
+        return f"SKIP ({'/'.join(missing)} not found)"
+
     r = run(["cmake", "-B", BUILD_DIR, "-S", REPO_ROOT, "-DCMAKE_BUILD_TYPE=Debug"])
     if r.returncode != 0:
         print("ERROR: cmake configure failed")
-        return False
+        return "FAIL"
 
     r = run(["cmake", "--build", BUILD_DIR, "--parallel"])
     if r.returncode != 0:
         print("ERROR: cmake build failed")
-        return False
+        return "FAIL"
 
     r = run(["ctest", "--output-on-failure", "--test-dir", BUILD_DIR])
-    return r.returncode == 0
+    return "PASS" if r.returncode == 0 else "FAIL"
 
 
 def run_syntax_tests():
     section("SYNTAX TESTS")
     r = subprocess.run([sys.executable, SYNTAX_RUNNER])
-    return r.returncode == 0
+    return "PASS" if r.returncode == 0 else "FAIL"
 
 
 def main():
-    rust_ok   = run_rust_unit_tests()
-    c_ok      = run_c_unit_tests()
-    syntax_ok = run_syntax_tests()
+    syntax_status = run_syntax_tests()
+    c_status      = run_c_unit_tests()
+    rust_status   = run_rust_unit_tests()
 
     section("SUMMARY")
-    print(f"  Unit tests (Rust):   {'PASS' if rust_ok   else 'FAIL'}")
-    print(f"  Unit tests (C):      {'PASS' if c_ok      else 'FAIL'}")
-    print(f"  Syntax tests:        {'PASS' if syntax_ok else 'FAIL'}")
+    print(f"  Syntax tests:        {syntax_status}")
+    print(f"  Unit tests (C):      {c_status}")
+    print(f"  Unit tests (Rust):   {rust_status}")
     print()
 
-    if rust_ok and c_ok and syntax_ok:
-        print("All tests passed.")
-        return 0
-    print("Some tests FAILED.")
-    return 1
+    if "FAIL" in (syntax_status, c_status, rust_status):
+        print("Some tests FAILED.")
+        return 1
+    print("All tests passed (skipped stages excluded).")
+    return 0
 
 
 if __name__ == "__main__":

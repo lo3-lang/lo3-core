@@ -1,4 +1,5 @@
 use super::*;
+use serial_test::serial;
 use std::ffi::{CStr, CString};
 
 fn setup() { unsafe { var_init(); } }
@@ -13,6 +14,7 @@ fn cstr(s: &str) -> CString { CString::new(s).unwrap() }
 // ── var_find ─────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn find_returns_minus1_when_empty() {
     with_vars!({
         assert_eq!(-1, unsafe { var_find(cstr("x").as_ptr()) });
@@ -20,6 +22,7 @@ fn find_returns_minus1_when_empty() {
 }
 
 #[test]
+#[serial]
 fn find_returns_minus1_for_unknown() {
     with_vars!({
         unsafe { var_create(cstr("known").as_ptr(), 0); }
@@ -28,6 +31,7 @@ fn find_returns_minus1_for_unknown() {
 }
 
 #[test]
+#[serial]
 fn find_returns_valid_index_after_create() {
     with_vars!({
         unsafe { var_create(cstr("myvar").as_ptr(), 0); }
@@ -36,6 +40,7 @@ fn find_returns_valid_index_after_create() {
 }
 
 #[test]
+#[serial]
 fn find_multiple_vars() {
     with_vars!({
         unsafe {
@@ -53,6 +58,7 @@ fn find_multiple_vars() {
 // ── var_create ───────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn create_num_type() {
     with_vars!({
         unsafe { var_create(cstr("numvar").as_ptr(), 0); }
@@ -61,6 +67,7 @@ fn create_num_type() {
 }
 
 #[test]
+#[serial]
 fn create_string_type() {
     with_vars!({
         unsafe { var_create(cstr("strvar").as_ptr(), 3); }
@@ -69,6 +76,7 @@ fn create_string_type() {
 }
 
 #[test]
+#[serial]
 fn create_empty_name_no_crash() {
     with_vars!({
         unsafe { var_create(cstr("").as_ptr(), 0); }
@@ -77,6 +85,7 @@ fn create_empty_name_no_crash() {
 }
 
 #[test]
+#[serial]
 fn create_null_name_no_crash() {
     with_vars!({
         unsafe { var_create(std::ptr::null(), 0); }
@@ -84,6 +93,7 @@ fn create_null_name_no_crash() {
 }
 
 #[test]
+#[serial]
 fn create_duplicate_no_crash() {
     with_vars!({
         unsafe {
@@ -97,6 +107,7 @@ fn create_duplicate_no_crash() {
 // ── var_get ──────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn get_returns_non_null_for_existing() {
     with_vars!({
         unsafe { var_create(cstr("g_test").as_ptr(), 0); }
@@ -105,6 +116,7 @@ fn get_returns_non_null_for_existing() {
 }
 
 #[test]
+#[serial]
 fn get_returns_null_for_missing() {
     with_vars!({
         assert!(unsafe { var_get(cstr("ghost").as_ptr()) }.is_null());
@@ -114,6 +126,7 @@ fn get_returns_null_for_missing() {
 // ── var_getType ──────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn gettype_num() {
     with_vars!({
         unsafe { var_create(cstr("nvar").as_ptr(), 0); }
@@ -123,6 +136,7 @@ fn gettype_num() {
 }
 
 #[test]
+#[serial]
 fn gettype_string() {
     with_vars!({
         unsafe { var_create(cstr("svar").as_ptr(), 3); }
@@ -134,6 +148,7 @@ fn gettype_string() {
 // ── var_setNum / var_getNum ───────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn setnum_and_getnum() {
     with_vars!({
         unsafe {
@@ -146,6 +161,7 @@ fn setnum_and_getnum() {
 }
 
 #[test]
+#[serial]
 fn setnum_negative() {
     with_vars!({
         unsafe {
@@ -158,6 +174,7 @@ fn setnum_negative() {
 }
 
 #[test]
+#[serial]
 fn setnum_zero() {
     with_vars!({
         unsafe {
@@ -170,6 +187,7 @@ fn setnum_zero() {
 }
 
 #[test]
+#[serial]
 fn setnum_overwrite() {
     with_vars!({
         unsafe {
@@ -183,6 +201,7 @@ fn setnum_overwrite() {
 }
 
 #[test]
+#[serial]
 fn setnum_wrong_type_no_crash() {
     with_vars!({
         unsafe {
@@ -193,6 +212,7 @@ fn setnum_wrong_type_no_crash() {
 }
 
 #[test]
+#[serial]
 fn setnum_nonexistent_no_crash() {
     with_vars!({
         unsafe { var_setNum(cstr("noexist").as_ptr(), 1); }
@@ -202,6 +222,7 @@ fn setnum_nonexistent_no_crash() {
 // ── var_setString / var_getString ─────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn setstring_and_getstring() {
     with_vars!({
         unsafe {
@@ -216,6 +237,7 @@ fn setstring_and_getstring() {
 }
 
 #[test]
+#[serial]
 fn setstring_wrong_type_no_crash() {
     with_vars!({
         unsafe {
@@ -226,6 +248,7 @@ fn setstring_wrong_type_no_crash() {
 }
 
 #[test]
+#[serial]
 fn setstring_nonexistent_no_crash() {
     with_vars!({
         unsafe { var_setString(cstr("noexist").as_ptr(), cstr("x").as_ptr() as *mut i8); }
@@ -235,6 +258,7 @@ fn setstring_nonexistent_no_crash() {
 // ── var_free ──────────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn free_removes_var() {
     with_vars!({
         unsafe {
@@ -246,6 +270,7 @@ fn free_removes_var() {
 }
 
 #[test]
+#[serial]
 fn free_nonexistent_no_crash() {
     with_vars!({
         unsafe { var_free(cstr("ghost").as_ptr()); }
@@ -253,6 +278,7 @@ fn free_nonexistent_no_crash() {
 }
 
 #[test]
+#[serial]
 fn free_last_element() {
     with_vars!({
         unsafe {
@@ -264,6 +290,7 @@ fn free_last_element() {
 }
 
 #[test]
+#[serial]
 fn free_middle_element() {
     with_vars!({
         unsafe {
@@ -281,6 +308,7 @@ fn free_middle_element() {
 // ── var_getValue ──────────────────────────────────────────────────────────────
 
 #[test]
+#[serial]
 fn getvalue_num() {
     with_vars!({
         unsafe {
