@@ -9,7 +9,7 @@
 
 > [!NOTE]
 > Claude Code is not used for the core func of this repo.
-> Only for bug fixes, test/ (human in a loop - version)
+> Only for bug fixes, test/*, ...
 
 ## What is this language about?
 lo3 is a token based interpreted programming language written in C.
