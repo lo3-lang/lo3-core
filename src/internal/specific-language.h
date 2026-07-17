@@ -24,9 +24,14 @@ typedef enum {
 	CNT_callS = 'C', // call extern lib (better func!, uses relative path)
 	CNT_label = 'l', // define new label
 	CNT_new = 'n',   // define new variable
-	CNT_cmp = '?',
-	CNT_small = '<',
-	CNT_big = '>',
+	CNT_cmp = '?', // if a == b == true g[0] = 1, else g[0] = 0
+	CNT_small = '<', // if a < b == true g[0] = 1, else g[0] = 0
+	CNT_big = '>', // if a > b == true g[0] = 1, else g[0] = 0
+	CNT_kiLab = 'k', // kill a label
+	CNT_push = 'p', // push manually
+	CNT_pop = 't', // pop manually#
+
+	CNT_init = 'x', // to reset push and pop
 
 	// stream
 	STM_out = 'o', // shifts sth into stdout
@@ -36,7 +41,7 @@ typedef enum {
 
 	RET_good = '0', // stop the program with exit code 0
 	RET_bad = '1',  // return the program with exit code 1
-	RET_smart = 'r' // some feature which needs call func, but this is not avaible yet...
+	RET_smart = 'r' // return from stack
 
 
 } lo3_cmds;
@@ -63,3 +68,7 @@ void exec_small(lo3_val a1, lo3_val a2);
 void exec_big(lo3_val a1, lo3_val a2);
 void exec_sys(lo3_val a1, lo3_val a2);
 void exec_ret(lo3_val a1, lo3_val a2);
+void exec_kiLab(lo3_val a1, lo3_val a2);
+void exec_push(lo3_val a1, lo3_val a2);
+void exec_pop(lo3_val a1, lo3_val a2);
+void exec_init(lo3_val a1, lo3_val a2);

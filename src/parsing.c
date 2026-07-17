@@ -144,7 +144,7 @@ parsing:
 		line = NULL;
 		len = 0;
 		continue;
-    }
+	}
 
 		lo3_cmds cmds = (lo3_cmds)line[1];
 
@@ -395,6 +395,22 @@ int pars_dispatch(lo3_cmds cmd, lo3_val a1, lo3_val a2) {
 
 	case RET_smart:
 		exec_ret(a1, a2);
+		break;
+
+	case CNT_kiLab:
+		exec_kiLab(a1, a2);
+		break;
+
+	case CNT_push:
+		exec_push(a1, a2);
+		break;
+
+	case CNT_pop:
+		exec_pop(a1, a2);
+		break;
+
+	case CNT_init:
+		exec_init(a1, a2);
 		break;
 
 	default:

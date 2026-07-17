@@ -1,0 +1,19 @@
+#x
+#o "x done"
+
+#n "b" $0
+#o "var b created"
+
+#= "b" $3
+#o "b = 3"
+
+#p _b
+#o "3 on stack"
+
+#n "a" $0
+#o "a created"
+
+#t "a"
+#o "stack 3 -> a"
+
+#o %a
