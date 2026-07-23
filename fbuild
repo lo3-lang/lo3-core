@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+time {
+	cmake -B build
+	cmake --build build
+	./bin/lo3 test.lo3
+}
+
