@@ -53,6 +53,12 @@ cmake --build build
 ./bin/lo3 test.lo3
 ```
 
+or with the bash script:
+```bash
+chmod +x fbuild
+./fbuild
+```
+
 ### Win:
 ```powershell
 cmake -B build
