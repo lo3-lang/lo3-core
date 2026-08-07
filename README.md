@@ -8,6 +8,12 @@
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/lo3-lang/lo3-core)
 
 > [!NOTE]
+> This repo will be archived very soon.
+> This mean that my language is mostly done.
+> There will only be up to v0.3.3, which will then be considert as v1.0.0 (stable), as NONE of the features will change anymore
+>
+>
+>
 > Claude Code is not used for the core func of this repo.
 > Only for bug fixes, test/*, ...
 
@@ -30,15 +36,7 @@ This will start the interpreter and run your code.
 
 | Feature | Status |
 | :--- | :--- |
-| ALU Operations | ✅ |
-| Control Flow | ✅ |
-| Func Calling | ✅ |
-| Input/STDIN | ✅ |
-| Output/STDOUT | ✅ |
-| Operating with vars | ✅ |
-| Operating with g[] | ⚠️ %2% |
-| Manually exiting with 0 or 1 | ✅ |
-| Auto exiting | ✅ |
+| all festures: | ✅ |
 
 ---
 
