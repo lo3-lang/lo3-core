@@ -96,3 +96,7 @@ Tests are written in C++, Rust and Python to avoid language-level bias when test
 # run all tests
 cmake --build build --target test
 ```
+
+## License
+
+[LICENSE](./LICENSE)
