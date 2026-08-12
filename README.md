@@ -99,4 +99,4 @@ cmake --build build --target test
 
 ## License
 
-[LICENSE](LICENSE)
+[LICENSE](./LICENSE)
