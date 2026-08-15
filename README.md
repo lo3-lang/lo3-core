@@ -36,7 +36,7 @@ This will start the interpreter and run your code.
 
 | Feature | Status |
 | :--- | :--- |
-| all festures: | ✅ |
+| all features: | ✅ |
 
 ---
 
