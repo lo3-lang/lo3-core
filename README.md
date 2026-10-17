@@ -32,16 +32,6 @@ lo3 {FILENAME}
 ```
 This will start the interpreter and run your code.
 
-## Progress
-
-| Feature | Status |
-| :--- | :--- |
-| all features: | ✅ |
-
----
-
-%2%: to set some value into g[] is only possible with the buildin macro system.
-get g[X]... from every cmd
 ## Compile it yourself
 
 ```bash
