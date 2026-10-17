@@ -45,33 +45,8 @@ get g[X]... from every cmd
 ## Compile it yourself
 
 ```bash
-make
+make install
 ```
-
-## Add it to the PATH
-
-### Linux:
-
-If you are root / have rights to sudo:
-```
-sudo cp ./bin/lo3 /usr/local/bin/
-```
-
-Or if you dont:
-```
-cp ./bin/lo3 ~/.local/bin/
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-> Then you can just write `lo3 ...`
-
-### Windows:
-Press `Win+R` input `sysdm.cpl`
-In more (or any other name) > Environment Variables
-In path add a new index and input there the path to this program.
-
-For example:
-`C:\Users\yourUserName\Desktop\lo3-core\build\`
 
 ## Tests
 Tests are written in C++, Rust and Python to avoid language-level bias when testing a C core.
