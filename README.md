@@ -44,24 +44,8 @@ This will start the interpreter and run your code.
 get g[X]... from every cmd
 ## Compile it yourself
 
-### Linux:
 ```bash
-cmake -B build
-cmake --build build
-./bin/lo3 test.lo3
-```
-
-or with the bash script:
-```bash
-chmod +x fbuild
-./fbuild
-```
-
-### Win:
-```powershell
-cmake -B build
-cmake --build build
-.\bin\lo3.exe test.lo3
+make
 ```
 
 ## Add it to the PATH
@@ -92,9 +76,10 @@ For example:
 ## Tests
 Tests are written in C++, Rust and Python to avoid language-level bias when testing a C core.
 
+Run all tests:
+
 ```bash
-# run all tests
-cmake --build build --target test
+make -k test
 ```
 
 ## License
