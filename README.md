@@ -7,7 +7,7 @@
 ![Platform](https://img.shields.io/badge/platform-linux%20|%20windows-lightgrey)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/lo3-lang/lo3-core)
 
-> [!NOTE].
+> [!NOTE]
 > Claude Code is not used for the core func of this repo.
 > Only for bug fixes, test/*, ...
 
