@@ -7,13 +7,7 @@
 ![Platform](https://img.shields.io/badge/platform-linux%20|%20windows-lightgrey)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/lo3-lang/lo3-core)
 
-> [!NOTE]
-> This repo will be archived very soon.
-> This mean that my language is mostly done.
-> There will only be up to v0.3.3, which will then be considert as v1.0.0 (stable), as NONE of the features will change anymore
->
->
->
+> [!NOTE].
 > Claude Code is not used for the core func of this repo.
 > Only for bug fixes, test/*, ...
 
